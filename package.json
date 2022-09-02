@@ -1,0 +1,21 @@
+{
+  "name": "backend-app",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UNA-GLOBALES-G04/backend-app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/UNA-GLOBALES-G04/backend-app/issues"
+  },
+  "homepage": "https://github.com/UNA-GLOBALES-G04/backend-app#readme",
+  "dependencies": {
+    "swagger-ui-dist": "^4.14.0"
+  }
+}
