@@ -454,3 +454,6 @@ $RECYCLE.BIN/
 !.vscode/extensions.json
 
 ## ignore node_modules
+/node_modules/
+/site/
+/public/
