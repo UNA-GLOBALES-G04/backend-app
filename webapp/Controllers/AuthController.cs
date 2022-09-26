@@ -21,7 +21,9 @@ namespace webapp.Controllers
         [HttpPost, Route("login")]
         public IActionResult login(LoginDTO user)
         {
-            if (user.UserName == "user" && user.Password == "password")
+            // at the moment we will not validate the user
+            // user.UserName == "user" 
+            if (user.Password == "password")
             {
                 var issuer = configuration["Jwt:Issuer"];
                 var audience = configuration["Jwt:Audience"];
