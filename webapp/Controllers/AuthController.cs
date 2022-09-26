@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;   
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
-using System.IdentityModel.Tokens.Jwt;   
-using System.Security.Claims; 
-
- 
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
+
 using webapp.model;
 
 namespace webapp.Controllers
@@ -15,36 +13,42 @@ namespace webapp.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        [HttpPost, Route("login")]
-        public IActionResult login(LoginDTO loginDTO)
+        private IConfiguration configuration;
+        public AuthController(IConfiguration configuration)
         {
-            try
+            this.configuration = configuration;
+        }
+        [HttpPost, Route("login")]
+        public IActionResult login(LoginDTO user)
+        {
+            if (user.UserName == "user" && user.Password == "password")
             {
-                if (string.IsNullOrEmpty(loginDTO.UserName) ||
-                string.IsNullOrEmpty(loginDTO.Password))
-                    return BadRequest("Username and/or Password not specified");
-                if (loginDTO.UserName.Equals("user") &&
-                loginDTO.Password.Equals("password"))
+                var issuer = configuration["Jwt:Issuer"];
+                var audience = configuration["Jwt:Audience"];
+                var key = Encoding.ASCII.GetBytes
+                (configuration["Jwt:Key"]);
+                var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                    var secretKey = new SymmetricSecurityKey
-                    (Encoding.UTF8.GetBytes("thisisasecretkey@123"));
-                    var signinCredentials = new SigningCredentials
-                   (secretKey, SecurityAlgorithms.HmacSha256);
-                    var jwtSecurityToken = new JwtSecurityToken(
-                        issuer: "ABCXYZ",
-                        audience: "http://localhost:51398",
-                        claims: new List<Claim>(),
-                        expires: DateTime.Now.AddMinutes(10),
-                        signingCredentials: signinCredentials
-                    );
-                    return Ok(new JwtSecurityTokenHandler().
-                    WriteToken(jwtSecurityToken));
-                }
-            }
-            catch
-            {
-                return BadRequest
-                ("An error occurred in generating the token");
+                    Subject = new ClaimsIdentity(new[]
+                    {
+                        new Claim("Id", Guid.NewGuid().ToString()),
+                        new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                        new Claim(JwtRegisteredClaimNames.Email, user.UserName),
+                        new Claim(JwtRegisteredClaimNames.Jti,
+                        Guid.NewGuid().ToString())
+                    }),
+                    Expires = DateTime.UtcNow.AddMinutes(5),
+                    Issuer = issuer,
+                    Audience = audience,
+                    SigningCredentials = new SigningCredentials
+                    (new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha512Signature)
+                };
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                var jwtToken = tokenHandler.WriteToken(token);
+                var stringToken = tokenHandler.WriteToken(token);
+                return Ok(new { token = stringToken });
             }
             return Unauthorized();
         }
