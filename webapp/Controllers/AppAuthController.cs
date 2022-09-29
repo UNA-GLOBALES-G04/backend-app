@@ -42,7 +42,7 @@ namespace webapp.Controllers
         }
 
         // validate the token
-        private TokenValidationResult ValidateToken(string token)
+        private TokenValidationResult ValidateToken([FromBody] string token)
         {
             var keyPath = configuration["AppJwt:PublicKeyPath"];
             var keyData = System.IO.File.ReadAllText(keyPath);
