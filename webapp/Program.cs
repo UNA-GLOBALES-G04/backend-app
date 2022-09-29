@@ -1,10 +1,11 @@
-using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using webapp.data;
+using webapp.service;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,6 +65,20 @@ builder.Services.AddSwaggerGen(option =>
         }
     });
 });
+
+
+// ----------------------------------------
+// Contexts Services
+// ----------------------------------------
+
+// get the connection string
+var connectionString = builder.Configuration.GetConnectionString("DataSource");
+
+builder.Services.AddNpgsql<UserProfileContext>(connectionString);
+
+builder.Services.AddScoped<UserProfileService>();
+
+// ----------------------------------------
 
 var app = builder.Build();
 

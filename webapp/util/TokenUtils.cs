@@ -24,11 +24,10 @@ namespace webapp.util
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                        new Claim("Id", Guid.NewGuid().ToString()),
-                        new Claim(JwtRegisteredClaimNames.Sub, userId),
-                        new Claim(JwtRegisteredClaimNames.Jti,
-                        Guid.NewGuid().ToString())
-                    }),
+                    new Claim(JwtRegisteredClaimNames.Sub, userId),
+                    new Claim(JwtRegisteredClaimNames.Jti,
+                    Guid.NewGuid().ToString())
+                }),
                 Expires = DateTime.UtcNow.AddMinutes(5),
                 Issuer = issuer,
                 Audience = audience,
