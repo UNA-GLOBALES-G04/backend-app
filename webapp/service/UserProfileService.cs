@@ -46,8 +46,21 @@ namespace webapp.service
             return null;
         }
 
-        public UserProfile updateUserProfile(UserProfile userProfile)
+        public UserProfile updateUserProfile(UserProfile userProfile, bool isUser)
         {
+            // the user cannot update some fields of the profile
+            if (isUser)
+            {
+                // get the original legalDocumentID, birthDate, isDeleted and isVerified
+                var originalUserProfile = context.UserProfiles.Find(userProfile.Id);
+                if (originalUserProfile != null)
+                {
+                    userProfile.legalDocumentID = originalUserProfile.legalDocumentID;
+                    userProfile.birthDate = originalUserProfile.birthDate;
+                    userProfile.isDeleted = originalUserProfile.isDeleted;
+                    userProfile.isVerified = originalUserProfile.isVerified;
+                }
+            }
             context.UserProfiles.Update(userProfile);
             context.SaveChanges();
             return userProfile;

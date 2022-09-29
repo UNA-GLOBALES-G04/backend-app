@@ -90,5 +90,48 @@ namespace webapp.Controllers
                     }
             );
         }
+
+        // update user profile
+        [HttpPut, Route("profile/user"), Authorize]
+        public IActionResult updateUserProfile([FromBody] UserProfile userProfile)
+        {
+            var subClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            string userID = (subClaim != null) ? subClaim.Value : "";
+            if (userID == "")
+            {
+                return Unauthorized(
+                    new
+                    {
+                        error_code = "invalid_token",
+                        error_description = "The token is invalid, please login again"
+                    }
+                );
+            }
+            if (!userProfileService.existsUserProfile(userID))
+            {
+                return NotFound(
+                    new
+                    {
+                        error_code = "user_profile_not_found",
+                        error_description = "The user profile data was not found, try creating it"
+                    }
+                );
+            }
+
+            userProfile.Id = userID;
+            var updatedUserProfile = userProfileService.updateUserProfile(userProfile, true);
+            if (updatedUserProfile != null)
+            {
+                return Ok(updatedUserProfile);
+            }
+
+            return BadRequest(
+                    new
+                    {
+                        error_code = "err_put_user_profile",
+                        error_description = "There was an error updating the user profile"
+                    }
+            );
+        }
     }
 }
