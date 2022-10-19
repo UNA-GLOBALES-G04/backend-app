@@ -66,14 +66,16 @@ namespace webapp.service
             return userProfile;
         }
 
-        public void deleteUserProfile(string userID)
+        public bool deleteUserProfile(string userID)
         {
             var userProfile = getUserProfile(userID);
             if (userProfile != null)
             {
-                context.UserProfiles.Remove(userProfile);
-                context.SaveChanges();
+                userProfile.isDeleted = true;
+                context.UserProfiles.Update(userProfile);
+                return context.SaveChanges() > 0;
             }
+            return false;
         }
 
 
