@@ -74,7 +74,7 @@ builder.Services.AddSwaggerGen(option =>
 // get the connection string
 var connectionString = builder.Configuration.GetConnectionString("DataSource");
 
-builder.Services.AddNpgsql<UserProfileContext>(connectionString);
+builder.Services.AddNpgsql<WebAppContext>(connectionString);
 
 builder.Services.AddScoped<UserProfileService>();
 

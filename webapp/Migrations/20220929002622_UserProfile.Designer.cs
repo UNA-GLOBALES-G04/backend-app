@@ -11,7 +11,7 @@ using webapp.data;
 
 namespace webapp.Migrations
 {
-    [DbContext(typeof(UserProfileContext))]
+    [DbContext(typeof(WebAppContext))]
     [Migration("20220929002622_UserProfile")]
     partial class UserProfile
     {

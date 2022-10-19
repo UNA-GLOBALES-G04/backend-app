@@ -7,8 +7,8 @@ namespace webapp.service
     public class UserProfileService
     {
 
-        private UserProfileContext context;
-        public UserProfileService(UserProfileContext context)
+        private WebAppContext context;
+        public UserProfileService(WebAppContext context)
         {
             this.context = context;
         }

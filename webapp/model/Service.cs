@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace webapp.model
 {
     public class Service
     {
-        public Guid serviceID { get; set; }
+        public Guid Id { get; set; }
         public string serviceName { get; set; }
         public string description { get; set; }
         public string email { get; set; }
@@ -12,7 +14,7 @@ namespace webapp.model
         public bool isDeleted { get; set; }
 
         public Service(
-            Guid serviceID,
+            Guid Id,
             string serviceName,
             string description,
             string email,
@@ -21,7 +23,7 @@ namespace webapp.model
             string[] multimedia,
             bool isDeleted)
         {
-            this.serviceID = serviceID;
+            this.Id = Id;
             this.serviceName = serviceName;
             this.description = description;
             this.email = email;
@@ -30,5 +32,11 @@ namespace webapp.model
             this.multimedia = multimedia;
             this.isDeleted = isDeleted;
         }
+
+        [MaxLength(36)]
+        public string UserProfileId { get; set; } = "";
+        public UserProfile UserProfile { get; set; } = new UserProfile();
+
+
     }
 }
