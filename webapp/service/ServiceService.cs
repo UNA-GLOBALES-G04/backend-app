@@ -15,13 +15,21 @@ namespace webapp.service
             this.context = context;
         }
 
-        public Service? getService(string serviceID)
+        public Service? getService(string serviceID, bool filterDeleted)
         {
+            if (filterDeleted)
+            {
+                return context.Services.Where(s => s.isDeleted == false).FirstOrDefault();
+            }
             return context.Services.Find(serviceID);
         }
 
-        public IEnumerable<Service> getServicesByUserProfileID(string userProfileID)
+        public IEnumerable<Service> getServicesByUserProfileID(string userProfileID, bool filterDeleted)
         {
+            if (filterDeleted)
+            {
+                return context.Services.Where(s => s.UserProfileId == userProfileID && s.isDeleted == false).ToList();
+            }
             return context.Services.Where(s => s.UserProfileId == userProfileID).ToList();
         }
 
