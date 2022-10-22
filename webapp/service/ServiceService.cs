@@ -28,7 +28,7 @@ namespace webapp.service
         {
             if (filterDeleted)
             {
-                return context.Services.Where(s => s.UserProfileId == userProfileID && s.isDeleted == false).ToList();
+                return context.Services.Where(s => s.UserProfileId == userProfileID && s.isDeleted == false);
             }
             return context.Services.Where(s => s.UserProfileId == userProfileID).ToList();
         }
@@ -47,6 +47,7 @@ namespace webapp.service
         {
             // the service will have a random GUID
             service.Id = Guid.NewGuid();
+            // the service is not deleted by default
             context.Services.Add(service);
             if (context.SaveChanges() > 0)
             {
