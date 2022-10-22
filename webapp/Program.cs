@@ -77,10 +77,13 @@ var connectionString = builder.Configuration.GetConnectionString("DataSource");
 builder.Services.AddNpgsql<WebAppContext>(connectionString);
 
 builder.Services.AddScoped<UserProfileService>();
+builder.Services.AddScoped<ServiceService>();
 
 // ----------------------------------------
 
 var app = builder.Build();
+var pathBase = "api";
+app.UsePathBase($"/{pathBase}");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

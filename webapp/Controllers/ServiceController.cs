@@ -14,10 +14,12 @@ namespace webapp.Controllers
     {
         private IConfiguration configuration;
         private ServiceService serviceService;
-        public ServiceController(IConfiguration configuration, ServiceService serviceService)
+        private UserProfileService userProfileService;
+        public ServiceController(IConfiguration configuration, ServiceService serviceService, UserProfileService userProfileService)
         {
             this.configuration = configuration;
             this.serviceService = serviceService;
+            this.userProfileService = userProfileService;
         }
 
         [HttpGet, Route("id/{serviceID}"), Authorize]
@@ -98,6 +100,19 @@ namespace webapp.Controllers
             // check if the service has the same user id
             if (service.UserProfileId == userID)
             {
+                // load the user profile
+                var userProfile = userProfileService.getUserProfile(userID);
+                if (userProfile == null)
+                {
+                    return NotFound(
+                        new
+                        {
+                            error_code = "user_profile_not_found",
+                            error_description = "The user profile was not found"
+                        }
+                    );
+                }
+                service.UserProfile = userProfile;
                 // add the new service
                 Service? result = serviceService.createService(service);
                 if (result != null)

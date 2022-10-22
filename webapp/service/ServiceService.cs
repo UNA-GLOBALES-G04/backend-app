@@ -45,6 +45,8 @@ namespace webapp.service
 
         public Service? createService(Service service)
         {
+            // the service will have a random GUID
+            service.Id = Guid.NewGuid();
             context.Services.Add(service);
             if (context.SaveChanges() > 0)
             {

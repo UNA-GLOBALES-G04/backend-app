@@ -18,6 +18,12 @@ namespace webapp.util
         {
             var issuer = configuration["Jwt:Issuer"];
             var audience = configuration["Jwt:Audience"];
+            var keyString = configuration["Jwt:Key"];
+            // check that is not empty or is replace-me
+            if (string.IsNullOrEmpty(keyString) || keyString == "replace-me")
+            {
+                throw new Exception("Jwt:Key is not set in the application configuration");
+            }
             var key = Encoding.ASCII.GetBytes
             (configuration["Jwt:Key"]);
             var tokenDescriptor = new SecurityTokenDescriptor
