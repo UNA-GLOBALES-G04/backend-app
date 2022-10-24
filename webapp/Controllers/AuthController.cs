@@ -17,8 +17,9 @@ namespace webapp.Controllers
         public IActionResult login(LoginDTO user)
         {
             // at the moment we will not validate the user
-            // user.UserName == "user" 
-            if (user.Password == "password")
+            // user.UserName == "user"
+            // user.Password == "password" 
+            if (true)
             {
                 var stringToken = new TokenUtils(configuration).GenerateToken(user.UserName);
                 return Ok(new { token = stringToken });
