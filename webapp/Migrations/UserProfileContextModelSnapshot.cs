@@ -48,6 +48,10 @@ namespace webapp.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ServiceId");
+
+                    b.HasIndex("UserProfileId");
+
                     b.ToTable("Orders");
                 });
 
@@ -142,6 +146,21 @@ namespace webapp.Migrations
                         .IsUnique();
 
                     b.ToTable("UserProfiles");
+                });
+
+            modelBuilder.Entity("webapp.model.Order", b =>
+                {
+                    b.HasOne("webapp.model.Service", null)
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("webapp.model.UserProfile", null)
+                        .WithMany()
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("webapp.model.Service", b =>
