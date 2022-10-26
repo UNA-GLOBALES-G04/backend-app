@@ -16,6 +16,10 @@ namespace webapp.model
         public string[] multimedia { get; set; }
         public bool isDeleted { get; set; }
 
+        [MaxLength(36)]
+        public string UserProfileId { get; set; } = "";
+        public UserProfile UserProfile { get; set; } = new UserProfile();
+
         public Service(
             Guid Id,
             string serviceName,
@@ -35,10 +39,6 @@ namespace webapp.model
             this.multimedia = multimedia;
             this.isDeleted = isDeleted;
         }
-
-        [MaxLength(36)]
-        public string UserProfileId { get; set; } = "";
-        public UserProfile UserProfile { get; set; } = new UserProfile();
 
 
     }
