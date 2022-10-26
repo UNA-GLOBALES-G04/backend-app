@@ -165,13 +165,11 @@ namespace webapp.Migrations
 
             modelBuilder.Entity("webapp.model.Service", b =>
                 {
-                    b.HasOne("webapp.model.UserProfile", "UserProfile")
+                    b.HasOne("webapp.model.UserProfile", null)
                         .WithMany()
                         .HasForeignKey("UserProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("UserProfile");
                 });
 #pragma warning restore 612, 618
         }

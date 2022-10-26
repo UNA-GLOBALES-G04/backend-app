@@ -68,7 +68,6 @@ namespace webapp.service
                 {
                     service.Id = originalService.Id;
                     service.UserProfileId = originalService.UserProfileId;
-                    service.UserProfile = originalService.UserProfile;
                     service.isDeleted = originalService.isDeleted;
                 }
             }

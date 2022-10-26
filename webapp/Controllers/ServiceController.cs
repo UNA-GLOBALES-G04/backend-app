@@ -100,9 +100,7 @@ namespace webapp.Controllers
             // check if the service has the same user id
             if (service.UserProfileId == userID)
             {
-                // load the user profile
-                var userProfile = userProfileService.getUserProfile(userID);
-                if (userProfile == null)
+                if (userProfileService.existsUserProfile(userID))
                 {
                     return NotFound(
                         new
@@ -112,7 +110,6 @@ namespace webapp.Controllers
                         }
                     );
                 }
-                service.UserProfile = userProfile;
                 // add the new service
                 Service? result = serviceService.createService(service);
                 if (result != null)

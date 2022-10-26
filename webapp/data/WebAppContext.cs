@@ -12,6 +12,11 @@ namespace webapp.data
         // set foreign keys
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // many Services to one UserProfile
+            modelBuilder.Entity<Service>()
+                .HasOne<UserProfile>()
+                .WithMany()
+                .HasForeignKey(s => s.UserProfileId);
 
 
             // many orders to one service

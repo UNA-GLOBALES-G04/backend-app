@@ -18,7 +18,6 @@ namespace webapp.model
 
         [MaxLength(36)]
         public string UserProfileId { get; set; } = "";
-        public UserProfile UserProfile { get; set; } = new UserProfile();
 
         public Service(
             Guid Id,
