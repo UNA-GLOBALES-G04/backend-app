@@ -78,6 +78,7 @@ builder.Services.AddNpgsql<WebAppContext>(connectionString);
 
 builder.Services.AddScoped<UserProfileService>();
 builder.Services.AddScoped<ServiceService>();
+builder.Services.AddScoped<OrderService>();
 
 // ----------------------------------------
 

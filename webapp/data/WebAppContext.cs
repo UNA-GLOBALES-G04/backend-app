@@ -11,6 +11,7 @@ namespace webapp.data
 
         public DbSet<UserProfile> UserProfiles => Set<UserProfile>();
         public DbSet<Service> Services => Set<Service>();
+        public DbSet<Order> Orders => Set<Order>();
     }
 
 }
