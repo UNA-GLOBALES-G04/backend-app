@@ -19,7 +19,9 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore backend-app
+      run: |
+        ls
+        dotnet restore backend-app
     - name: Build
       run: |
         dotnet build backend-app --no-restore -c release
