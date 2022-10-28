@@ -1,0 +1,66 @@
+image: mcr.microsoft.com/dotnet/sdk:6.0
+
+stages:          # List of stages for jobs, and their order of execution
+  - build
+  - test
+  - package
+  - deploy
+
+
+build-job:       # This job runs in the build stage, which runs first.
+  stage: build
+  script:
+    - cd app
+    - dotnet restore
+    - dotnet build -c release
+    - dotnet publish /p:Configuration=Release /p:PublishProfile=FolderProfile -o ../site
+  artifacts:
+    expire_in: 1 hour
+    paths:
+        - app/bin
+        - app/obj
+        - site/
+
+#unit-test-job:   # This job runs in the test stage.
+#  stage: test    # It only starts when the job in the build stage completes successfully.
+#  script:
+#    - cd app
+#    - dotnet test
+
+
+package-job:      # This job runs in the deploy stage.
+  image: alpine:3.16.2
+  stage: package
+# usando zip
+  before_script:
+    - apk add zip
+  script:
+    - cd site
+    - zip -r ./release.zip .
+  after_script:
+    - mv ./site/release.zip release.zip
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - release.zip
+# publicando como directorio
+#  script:
+#    - mv site/* .
+#  artifacts:
+#    exclude:
+#      - ./app
+#      - ./site
+#      - ./.vscode
+#      - ./.gitlab-ci.yml
+#    paths:
+#      - ./
+#    expire_in: 1 day     
+
+# send the release.zip to the server via http post
+upload-job:
+  stage: deploy
+  image: alpine:3.16.2
+  before_script:
+    - apk add curl
+  script:
+    - curl -F "uploads=release.zip" -F "token=$HTTP_UPLOAD_TOKEN" $HTTP_UPLOAD_URL
