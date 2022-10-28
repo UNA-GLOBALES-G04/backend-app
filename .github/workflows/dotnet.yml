@@ -30,6 +30,8 @@ jobs:
       uses: TheDoctor0/zip-release@0.6.2
       with:
         directory: site
+    - name: list
+      run: ls .
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v3
       with:
