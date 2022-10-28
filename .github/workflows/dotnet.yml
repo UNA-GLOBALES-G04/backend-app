@@ -31,7 +31,7 @@ jobs:
       with:
         directory: site
     - name: list
-      run: ls .
+      run: ls site
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v3
       with:
