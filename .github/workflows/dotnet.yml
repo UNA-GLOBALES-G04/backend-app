@@ -23,8 +23,7 @@ jobs:
     - name: Build
       run: |
         dotnet build webapp --no-restore -c release
-        mkdir site
-        dotnet publish webapp /p:Configuration=Release /p:PublishProfile=FolderProfile -o /site
+        dotnet publish webapp /p:Configuration=Release /p:PublishProfile=FolderProfile -o site
     - name: Test
       run: dotnet test webapp --no-build --verbosity normal
   package:
