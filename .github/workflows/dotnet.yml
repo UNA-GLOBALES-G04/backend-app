@@ -27,6 +27,7 @@ jobs:
     - name: Test
       run: dotnet test webapp --no-build --verbosity normal
   package:
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Zip Release
