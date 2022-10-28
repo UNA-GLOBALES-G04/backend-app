@@ -19,15 +19,13 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: |
-        ls
-        dotnet restore backend-app
+      run: dotnet restore webapp
     - name: Build
       run: |
-        dotnet build backend-app --no-restore -c release
-        dotnet publish backend-app /p:Configuration=Release /p:PublishProfile=FolderProfile -o /site
+        dotnet build webapp --no-restore -c release
+        dotnet publish webapp /p:Configuration=Release /p:PublishProfile=FolderProfile -o /site
     - name: Test
-      run: dotnet test backend-app --no-build --verbosity normal
+      run: dotnet test webapp --no-build --verbosity normal
   package:
     runs-on: ubuntu-latest
     steps:
