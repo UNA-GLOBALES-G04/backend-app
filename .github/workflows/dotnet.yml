@@ -26,7 +26,7 @@ jobs:
       run: |
         dotnet tool restore
         dotnet ef migrations bundle --configuration Bundle --project webapp
-        ls
+        mv efbundle site/efbundle
     - name: Test
       run: dotnet test webapp --no-build --verbosity normal
     - name: 'Upload Artifact'
