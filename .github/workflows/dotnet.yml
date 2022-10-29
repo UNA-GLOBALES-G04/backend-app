@@ -24,6 +24,7 @@ jobs:
       run: |
         dotnet build webapp --no-restore -c release
         dotnet publish webapp /p:Configuration=Release /p:PublishProfile=FolderProfile -o site
+        dotnet ef migrations bundle --configuration Bundle
     - name: Test
       run: dotnet test webapp --no-build --verbosity normal
     - name: 'Upload Artifact'
