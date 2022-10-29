@@ -26,14 +26,31 @@ jobs:
         dotnet publish webapp /p:Configuration=Release /p:PublishProfile=FolderProfile -o site
     - name: Test
       run: dotnet test webapp --no-build --verbosity normal
-    - name: Zip Release
-      uses: TheDoctor0/zip-release@0.6.2
-      with:
-        directory: site
-    - name: move release.zip
-      run: mv ./site/release.zip release.zip
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v3
       with:
         name: release
         path: site/
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      deployment_group: conecta2
+      deployment_target: backend
+    if: 
+      contains('
+        refs/heads/master
+      ', github.ref)
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v3.0.1
+        with:
+          name: release
+          path: site/
+      - name: Zip Release
+        uses: TheDoctor0/zip-release@0.6.2
+        with:
+          directory: site
+      - name: move release.zip
+        run: mv ./site/release.zip release.zip
+      
