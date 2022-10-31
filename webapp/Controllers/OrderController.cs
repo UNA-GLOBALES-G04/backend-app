@@ -82,8 +82,38 @@ namespace webapp.Controllers
             );
         }
 
+        // get the orders by serviceID and a array of status
+        [HttpGet, Route("{serviceID}/orders"), Authorize]
+        public IActionResult getServiceOrders(Guid serviceID, [FromQuery] Order.OrderStatus[] status)
+        {
+            var subClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            string userID = (subClaim != null) ? subClaim.Value : "";
+            if (userID == "")
+            {
+                return Unauthorized(
+                    new
+                    {
+                        error_code = "invalid_token",
+                        error_description = "The token is invalid, please login again"
+                    }
+                );
+            }
+            var orders = orderService.getOrdersByServiceID(serviceID, status);
+            if (orders != null)
+            {
+                return Ok(orders);
+            }
+
+            return NotFound(
+                    new
+                    {
+                        error_code = "orders_by_service_not_found",
+                        error_description = "The orders of service were not found"
+                    }
+            );
+        }
         // [HttpGet, Route("id/{orderID}"), Authorize]
-        // public IActionResult getOrderByorderID(string orderID)
+        // public IActionResult getOrderByServiceID(string serviceID)
         // {
         //     var subClaim = User.FindFirst(ClaimTypes.NameIdentifier);
         //     string userID = (subClaim != null) ? subClaim.Value : "";
@@ -97,7 +127,7 @@ namespace webapp.Controllers
         //             }
         //         );
         //     }
-        //     var orders = orderorder.getOrdersByorderID(orderID);
+        //     var orders = orderService.getOrdersByorderID(serviceID);
         //     if (orders != null)
         //     {
         //         return Ok(orders);
@@ -130,7 +160,7 @@ namespace webapp.Controllers
             // check if the order has the same user id
             if (order.UserProfileId == userID)
             {
-                if (userProfileService.existsUserProfile(userID))
+                if (!userProfileService.existsUserProfile(userID))
                 {
                     return NotFound(
                         new
