@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using webapp.model;
+using webapp.model.auth;
 
 namespace webapp.data
 {
@@ -29,11 +30,18 @@ namespace webapp.data
                 .HasOne<UserProfile>()
                 .WithMany()
                 .HasForeignKey(o => o.UserProfileId);
+
+            // in order to have a user profile, the user must have a user credential
+            modelBuilder.Entity<UserProfile>()
+                .HasOne<UserCredential>()
+                .WithOne()
+                .HasForeignKey<UserProfile>(u => u.Id);
         }
 
         public DbSet<UserProfile> UserProfiles => Set<UserProfile>();
         public DbSet<Service> Services => Set<Service>();
         public DbSet<Order> Orders => Set<Order>();
+        public DbSet<UserCredential> UserCredentials => Set<UserCredential>();
     }
 
 }
