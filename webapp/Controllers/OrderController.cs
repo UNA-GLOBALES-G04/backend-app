@@ -112,35 +112,6 @@ namespace webapp.Controllers
                     }
             );
         }
-        // [HttpGet, Route("id/{orderID}"), Authorize]
-        // public IActionResult getOrderByServiceID(string serviceID)
-        // {
-        //     var subClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-        //     string userID = (subClaim != null) ? subClaim.Value : "";
-        //     if (userID == "")
-        //     {
-        //         return Unauthorized(
-        //             new
-        //             {
-        //                 error_code = "invalid_token",
-        //                 error_description = "The token is invalid, please login again"
-        //             }
-        //         );
-        //     }
-        //     var orders = orderService.getOrdersByorderID(serviceID);
-        //     if (orders != null)
-        //     {
-        //         return Ok(orders);
-        //     }
-
-        //     return NotFound(
-        //             new
-        //             {
-        //                 error_code = "orders_not_found",
-        //                 error_description = "The order was not found"
-        //             }
-        //     );
-        // }
 
         [HttpPost, Authorize]
         public IActionResult addOrder(Order order)
