@@ -19,7 +19,7 @@ namespace webapp.Controllers
             this.userCredentialService = userCredentialService;
         }
 
-        [HttpPost, Route("login")]
+        [HttpPost]
         public IActionResult login(UserCredential user)
         {
             // get the user from the database
@@ -55,7 +55,7 @@ namespace webapp.Controllers
             return BadRequest("User could not be created");
         }
 
-        [HttpPatch, Route("update"), Authorize]
+        [HttpPatch, Authorize]
         public IActionResult update(UserCredential user)
         {
             // check if the user already exists
