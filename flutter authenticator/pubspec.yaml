@@ -42,6 +42,7 @@ dependencies:
   wave: ^0.2.2
   another_flushbar: ^1.12.29
   flutter_animated_dialog: ^2.0.1
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_test:

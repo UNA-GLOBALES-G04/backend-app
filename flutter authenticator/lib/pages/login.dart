@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:another_flushbar/flushbar.dart';
 import 'package:day_night_switcher/day_night_switcher.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:oneauth/util/lang/language.dart';
 import 'package:oneauth/util/lang_controller.dart';
@@ -8,6 +11,7 @@ import 'package:oneauth/util/theme_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
+import 'package:http/http.dart' as http;
 
 /// Example app widget
 class LoginPage extends StatelessWidget {
@@ -32,6 +36,16 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscureText = true;
   bool _rememberMe = false;
   final urlController = TextEditingController();
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAuthUrl().then((value) {
+      // TODO: auto login
+    });
+  }
 
   void _toggle() {
     setState(() {
@@ -64,11 +78,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return false;
   }
 
-  Future<String> url() async {
+  Future<String> get url async {
     var text = urlController.text;
     if (text.isEmpty) {
       var prefs = await SharedPreferences.getInstance();
-      text = prefs.getString('url') ?? '';
+      text = prefs.getString('url') ?? 'https://localhost';
     }
     return text;
   }
@@ -84,7 +98,6 @@ class _LoginScreenState extends State<LoginScreen> {
         leading: IconButton(
           icon: const Icon(Icons.settings),
           onPressed: () {
-            // show a popup menu
             showAnimatedDialog(
                 context: context,
                 barrierDismissible: true,
@@ -288,12 +301,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: <Widget>[
                   // the email field
                   TextFormField(
+                    controller: usernameController,
                     decoration: InputDecoration(
                       labelText: lang.getTranslation('username-or-email'),
                     ),
                   ),
                   // the password field (with a button to show/hide the password)
                   TextFormField(
+                    controller: passwordController,
                     decoration: InputDecoration(
                       labelText: lang.getTranslation('password'),
                       suffixIcon: IconButton(
@@ -338,7 +353,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          // do nothing
+                          tryLogin();
                         },
                         child: Text(lang.getTranslation('login')),
                       ),
@@ -361,5 +376,73 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  void tryLogin() async {
+    var lang = LanguageController.of(context);
+    var urlValue = await url;
+    var usernameValue = usernameController.text;
+    var passwordValue = passwordController.text;
+    var result = await http.post(Uri.parse("$urlValue/api/Auth"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({
+          'id': "",
+          'email': usernameValue,
+          'password': passwordValue,
+        }));
+    if (!mounted) return;
+    if (result.statusCode == 200) {
+      var token = jsonDecode(result.body)['token'];
+      // show a dialog where the user can copy the token
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(lang.getTranslation('token')),
+          content: Text(token),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(lang.getTranslation('close')),
+            ),
+            TextButton(
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: token));
+                Navigator.pop(context);
+              },
+              child: Text(lang.getTranslation('copy')),
+            ),
+          ],
+        ),
+      );
+    } else {
+      Flushbar(
+        title: lang.getTranslation("error-bar"),
+        message: result.statusCode == 401
+            ? lang.getTranslation("invalid-credentials")
+            : lang.getTranslation("unknown-error"),
+        backgroundColor: Theme.of(context).errorColor,
+        duration: const Duration(seconds: 3),
+        // retry
+        mainButton: TextButton(
+          // pass itself to the onPressed function
+          onPressed: () {
+            tryLogin();
+            // close the bar
+          },
+          child: Text(
+            lang.getTranslation("retry"),
+            style: TextStyle(color: Theme.of(context).primaryColor),
+          ),
+        ),
+      ).show(context);
+    }
+  }
+
+  Future<void> _loadAuthUrl() async {
+    setUrl(await url);
   }
 }
