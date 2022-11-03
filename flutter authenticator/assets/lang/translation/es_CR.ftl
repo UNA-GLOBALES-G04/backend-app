@@ -8,4 +8,8 @@ login=Iniciar sesión
 remember-me=Recordarme
 forgot-password=¿Olvidó su contraseña?
 register=Registrarse
-
+settings-title=Configuración
+settings-auth-url=URL de autenticación
+cancel=Cancelar
+save=Guardar
+invalid-url=URL inválida

@@ -40,6 +40,7 @@ dependencies:
   fluent: ^2.0.1
   day_night_switcher: ^0.2.0+1
   wave: ^0.2.2
+  another_flushbar: ^1.12.29
 
 dev_dependencies:
   flutter_test:

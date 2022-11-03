@@ -1,3 +1,6 @@
+import 'dart:html';
+
+import 'package:another_flushbar/flushbar.dart';
 import 'package:day_night_switcher/day_night_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:oneauth/util/lang/language.dart';
@@ -28,6 +31,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _obscureText = true;
   bool _rememberMe = false;
+  // https://localhost
+  Uri _url = Uri.parse('https://localhost');
 
   void _toggle() {
     setState(() {
@@ -45,13 +50,74 @@ class _LoginScreenState extends State<LoginScreen> {
     ThemeController.of(context).toggleTheme();
   }
 
+  bool setUrl(String url) {
+    var uri = Uri.parse(url);
+    if (uri.isAbsolute) {
+      setState(() {
+        _url = uri;
+      });
+      return true;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final lang = LanguageController.of(context);
     final isDarkMode = ThemeController.of(context).currentTheme == 'dark';
+    LanguageController lc = LanguageController.of(context);
+    // url text field controller
+    final urlController = TextEditingController();
+    urlController.text = _url.toString();
     return Scaffold(
       appBar: AppBar(
-        title: Text(lang.getTranslation('login-title')),
+        leading: IconButton(
+          icon: const Icon(Icons.settings),
+          onPressed: () {
+            // show a popup menu
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text(lc.getTranslation("settings-title")),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextField(
+                          controller: urlController,
+                          decoration: InputDecoration(
+                            labelText: lc.getTranslation("settings-auth-url"),
+                          ),
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(lc.getTranslation("cancel")),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          var url = urlController.text;
+                          if (setUrl(url)) {
+                            Navigator.of(context).pop();
+                          } else {
+                            Flushbar(
+                              backgroundColor: Theme.of(context).errorColor,
+                              message: lc.getTranslation("invalid-url"),
+                              duration: const Duration(seconds: 3),
+                            ).show(context);
+                          }
+                        },
+                        child: Text(lc.getTranslation("save")),
+                      ),
+                    ],
+                  );
+                });
+          },
+        ),
         actions: [
           SizedBox(
             height: double.infinity,
@@ -78,6 +144,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
+                    // popup animation
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    backgroundColor:
+                        Theme.of(context).cardColor.withOpacity(0.8),
                     title: Text(lang.getTranslation('select-a-language')),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -255,10 +327,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   // register text
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      lang.getTranslation('register'),
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        lang.getTranslation('register'),
+                      ),
                     ),
                   ),
                 ],
