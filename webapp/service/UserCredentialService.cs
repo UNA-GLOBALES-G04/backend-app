@@ -22,6 +22,11 @@ namespace webapp.service
             return context.UserCredentials.Find(ID);
         }
 
+        public UserCredential? getUserCredentialFromEmail(string email)
+        {
+            return context.UserCredentials.FirstOrDefault(u => u.Email == email);
+        }
+
         public bool existsUserCredential(string ID)
         {
             return context.UserCredentials.AsNoTracking().Any(s => s.Id == ID);
@@ -37,7 +42,7 @@ namespace webapp.service
             const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
             userCredential.Id = "";
             // generate a new of 36 characters until it is unique
-            while (existsUserCredential(userCredential.Id) && userCredential.Id.Length == 36)
+            while (existsUserCredential(userCredential.Id) || userCredential.Id.Length != 36)
             {
                 // can be alphanumeric with lowercase
                 var str = new string(Enumerable.Repeat(chars, 36)

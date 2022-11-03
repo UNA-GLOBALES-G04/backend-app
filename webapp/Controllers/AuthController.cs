@@ -23,14 +23,15 @@ namespace webapp.Controllers
         public IActionResult login(UserCredential user)
         {
             // get the user from the database
-            var userCredential = userCredentialService.getUserCredential(user.Id);
+            var userCredential = userCredentialService.getUserCredentialFromEmail(user.Email);
             if (userCredential != null)
             {
                 var hash = Argon2.Hash(userCredential.Password);
                 // verify the password
-                if (Argon2.Verify(hash, user.Password))
+                if (Argon2.Verify(hash, userCredential.Password))
                 {
                     // generate a JWT token
+                    user.Id = userCredential.Id;
                     var stringToken = new TokenUtils(configuration).GenerateToken(user.Id);
                     return Ok(new { token = stringToken });
                 }
@@ -49,6 +50,7 @@ namespace webapp.Controllers
             if (userCredential != null)
             {
                 // generate a JWT token
+                user.Id = userCredential.Id;
                 var stringToken = new TokenUtils(configuration).GenerateToken(userCredential.Id);
                 return Ok(new { token = stringToken });
             }
