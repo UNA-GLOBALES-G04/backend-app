@@ -10,6 +10,7 @@ namespace webapp.model.auth
         [MaxLength(36)]
         public string Id { get; set; } = "";
         public string Email { get; set; }
+        [DataType(DataType.Password)]
         public string Password { get; set; }
 
         public UserCredential(string id, string email, string password)
