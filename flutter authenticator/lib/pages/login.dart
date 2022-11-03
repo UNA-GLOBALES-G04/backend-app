@@ -39,11 +39,29 @@ class _LoginScreenState extends State<LoginScreen> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
+  bool _isSigningIn = false;
+  bool _isRegistering = false;
+
   @override
   void initState() {
     super.initState();
     _loadAuthUrl().then((value) {
       // TODO: auto login
+    });
+  }
+
+  bool get registering => _isRegistering;
+  bool get signingIn => _isSigningIn;
+
+  void setSigningIn(bool value) {
+    setState(() {
+      _isSigningIn = value;
+    });
+  }
+
+  void setRegistering(bool value) {
+    setState(() {
+      _isRegistering = value;
     });
   }
 
@@ -355,10 +373,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
-                            tryLogin();
-                          },
-                          child: Text(lang.getTranslation('login')),
+                          onPressed: signingIn ? null : tryLogin,
+                          // if is registering, show the register button
+                          child: signingIn
+                              ? const CircularProgressIndicator()
+                              : Text(lang.getTranslation('login')),
                         ),
                       ),
                     ),
@@ -366,12 +385,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: TextButton(
-                        onPressed: () {
-                          tryRegister();
-                        },
-                        child: Text(
-                          lang.getTranslation('register'),
-                        ),
+                        onPressed: registering ? null : tryRegister,
+                        child: registering
+                            ? const CircularProgressIndicator()
+                            : Text(lang.getTranslation('register')),
                       ),
                     ),
                   ],
@@ -385,6 +402,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void tryLogin() async {
+    setSigningIn(true);
     var lang = LanguageController.of(context);
     var urlValue = await url;
     var usernameValue = usernameController.text;
@@ -398,6 +416,7 @@ class _LoginScreenState extends State<LoginScreen> {
           'email': usernameValue,
           'password': passwordValue,
         }));
+    setSigningIn(false);
     if (!mounted) return;
     if (result.statusCode == 200) {
       var token = jsonDecode(result.body)['token'];
@@ -449,6 +468,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void tryRegister() async {
+    setRegistering(true);
     var lang = LanguageController.of(context);
     var urlValue = await url;
     var usernameValue = usernameController.text;
@@ -462,6 +482,7 @@ class _LoginScreenState extends State<LoginScreen> {
           'email': usernameValue,
           'password': passwordValue,
         }));
+    setRegistering(false);
     if (!mounted) return;
     if (result.statusCode == 200) {
       var token = jsonDecode(result.body)['token'];
