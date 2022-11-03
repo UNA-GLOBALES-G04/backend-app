@@ -1,11 +1,11 @@
-import 'dart:html';
-
 import 'package:another_flushbar/flushbar.dart';
 import 'package:day_night_switcher/day_night_switcher.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:oneauth/util/lang/language.dart';
 import 'package:oneauth/util/lang_controller.dart';
 import 'package:oneauth/util/theme_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 
@@ -31,8 +31,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _obscureText = true;
   bool _rememberMe = false;
-  // https://localhost
-  Uri _url = Uri.parse('https://localhost');
+  final urlController = TextEditingController();
 
   void _toggle() {
     setState(() {
@@ -53,12 +52,25 @@ class _LoginScreenState extends State<LoginScreen> {
   bool setUrl(String url) {
     var uri = Uri.parse(url);
     if (uri.isAbsolute) {
+      // save to shared preferences
+      SharedPreferences.getInstance().then((prefs) {
+        prefs.setString('url', url);
+      });
       setState(() {
-        _url = uri;
+        urlController.text = url;
       });
       return true;
     }
     return false;
+  }
+
+  Future<String> url() async {
+    var text = urlController.text;
+    if (text.isEmpty) {
+      var prefs = await SharedPreferences.getInstance();
+      text = prefs.getString('url') ?? '';
+    }
+    return text;
   }
 
   @override
@@ -66,17 +78,19 @@ class _LoginScreenState extends State<LoginScreen> {
     final lang = LanguageController.of(context);
     final isDarkMode = ThemeController.of(context).currentTheme == 'dark';
     LanguageController lc = LanguageController.of(context);
-    // url text field controller
-    final urlController = TextEditingController();
-    urlController.text = _url.toString();
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.settings),
           onPressed: () {
             // show a popup menu
-            showDialog(
+            showAnimatedDialog(
                 context: context,
+                barrierDismissible: true,
+                animationType: DialogTransitionType.slideFromTop,
+                curve: Curves.fastOutSlowIn,
+                duration: const Duration(milliseconds: 400),
                 builder: (context) {
                   return AlertDialog(
                     title: Text(lc.getTranslation("settings-title")),
@@ -141,8 +155,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 List<Language> languages = await lc.languages;
 
                 // show a dialog to select the language
-                showDialog(
+                showAnimatedDialog(
                   context: context,
+                  barrierDismissible: true,
+                  animationType: DialogTransitionType.slideFromRightFade,
+                  curve: Curves.fastOutSlowIn,
+                  duration: const Duration(milliseconds: 400),
                   builder: (context) => AlertDialog(
                     // popup animation
                     shape: RoundedRectangleBorder(
