@@ -297,79 +297,83 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             // the form
             Form(
-              child: Column(
-                children: <Widget>[
-                  // the email field
-                  TextFormField(
-                    controller: usernameController,
-                    decoration: InputDecoration(
-                      labelText: lang.getTranslation('username-or-email'),
-                    ),
-                  ),
-                  // the password field (with a button to show/hide the password)
-                  TextFormField(
-                    controller: passwordController,
-                    decoration: InputDecoration(
-                      labelText: lang.getTranslation('password'),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.remove_red_eye),
-                        onPressed: () {
-                          _toggle();
-                        },
+              child: FocusTraversalGroup(
+                child: Column(
+                  children: <Widget>[
+                    // the email field
+                    TextFormField(
+                      textInputAction: TextInputAction.next,
+                      controller: usernameController,
+                      decoration: InputDecoration(
+                        labelText: lang.getTranslation('username-or-email'),
                       ),
                     ),
-                    obscureText: _obscureText,
-                  ),
-                  Flex(
-                    // convert the direction to vertical if the width is less than 600
-                    direction: Axis.horizontal,
-                    children: <Widget>[
-                      // remember me checkbox
-                      Row(
-                        children: <Widget>[
-                          Checkbox(
-                            value: _rememberMe,
-                            onChanged: (bool? value) {
-                              toggleRememberMe();
-                            },
-                          ),
-                          Text(lang.getTranslation('remember-me')),
-                        ],
-                      ),
-                      // forgot password text
-                      const Spacer(),
-                      TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          lang.getTranslation('forgot-password'),
+                    // the password field (with a button to show/hide the password)
+                    TextFormField(
+                      onFieldSubmitted: (_) => tryLogin(),
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                        labelText: lang.getTranslation('password'),
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.remove_red_eye),
+                          onPressed: () {
+                            _toggle();
+                          },
                         ),
                       ),
-                    ],
-                  ),
+                      obscureText: _obscureText,
+                    ),
+                    Flex(
+                      // convert the direction to vertical if the width is less than 600
+                      direction: Axis.horizontal,
+                      children: <Widget>[
+                        // remember me checkbox
+                        Row(
+                          children: <Widget>[
+                            Checkbox(
+                              value: _rememberMe,
+                              onChanged: (bool? value) {
+                                toggleRememberMe();
+                              },
+                            ),
+                            Text(lang.getTranslation('remember-me')),
+                          ],
+                        ),
+                        // forgot password text
+                        const Spacer(),
+                        TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            lang.getTranslation('forgot-password'),
+                          ),
+                        ),
+                      ],
+                    ),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: SizedBox(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            tryLogin();
+                          },
+                          child: Text(lang.getTranslation('login')),
+                        ),
+                      ),
+                    ),
+                    // register text
+                    SizedBox(
                       width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          tryLogin();
-                        },
-                        child: Text(lang.getTranslation('login')),
+                      child: TextButton(
+                        onPressed: () {},
+                        child: Text(
+                          lang.getTranslation('register'),
+                        ),
                       ),
                     ),
-                  ),
-                  // register text
-                  SizedBox(
-                    width: double.infinity,
-                    child: TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        lang.getTranslation('register'),
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
