@@ -32,6 +32,11 @@ namespace webapp.service
             return context.UserCredentials.AsNoTracking().Any(s => s.Id == ID);
         }
 
+        public bool existsUserCredentialByEmail(string email)
+        {
+            return context.UserCredentials.AsNoTracking().Any(s => s.Email == email);
+        }
+
         public IEnumerable<UserCredential> getAllUserCredentials()
         {
             return context.UserCredentials.ToList();
@@ -39,6 +44,11 @@ namespace webapp.service
 
         public UserCredential? createUserCredential(UserCredential userCredential)
         {
+            // check if the user already exists
+            if (existsUserCredentialByEmail(userCredential.Email))
+            {
+                return null;
+            }
             const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
             userCredential.Id = "";
             // generate a new of 36 characters until it is unique

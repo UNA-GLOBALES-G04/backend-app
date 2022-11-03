@@ -45,6 +45,14 @@ namespace webapp.Controllers
         {
             // check if the user already exists
             user.Id = "";
+            // chek if the user already exists
+            if (userCredentialService.existsUserCredentialByEmail(user.Email))
+            {
+                return Unauthorized(new {
+                    code = "ERR_USER_EXISTS",
+                    message = $"User {user.Email} already exists"
+                });
+            }
             // create the user
             var userCredential = userCredentialService.createUserCredential(user);
             if (userCredential != null)
@@ -54,7 +62,11 @@ namespace webapp.Controllers
                 var stringToken = new TokenUtils(configuration).GenerateToken(userCredential.Id);
                 return Ok(new { token = stringToken });
             }
-            return BadRequest("User could not be created");
+            return BadRequest(new
+            {
+                code = "unknown_error",
+                message = "An unknown error occurred."
+            });
         }
 
         [HttpPatch, Authorize]

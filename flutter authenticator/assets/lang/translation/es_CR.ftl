@@ -20,3 +20,4 @@ error-bar=Error
 retry=Reintentar
 invalid-credentials=Nombre de usuario o contraseña inválidos
 unknown-error=Error desconocido
+email-already-registered=El correo {$email} ya está registrado
