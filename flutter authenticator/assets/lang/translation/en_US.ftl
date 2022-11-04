@@ -21,3 +21,4 @@ retry=Retry
 invalid-credentials=Worng username or password
 unknown-error=Unknown error
 email-already-registered=the email {$email} is already registered
+invalid-certificate=the host {$host} has an invalid certificate

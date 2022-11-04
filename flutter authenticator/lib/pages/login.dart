@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:another_flushbar/flushbar.dart';
 import 'package:day_night_switcher/day_night_switcher.dart';
@@ -407,63 +408,110 @@ class _LoginScreenState extends State<LoginScreen> {
     var urlValue = await url;
     var usernameValue = usernameController.text;
     var passwordValue = passwordController.text;
-    var result = await http.post(Uri.parse("$urlValue/api/Auth"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode({
-          'id': "",
-          'email': usernameValue,
-          'password': passwordValue,
-        }));
-    setSigningIn(false);
-    if (!mounted) return;
-    if (result.statusCode == 200) {
-      var token = jsonDecode(result.body)['token'];
-      // show a dialog where the user can copy the token
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(lang.getTranslation('token')),
-          content: Text(token),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text(lang.getTranslation('close')),
-            ),
-            TextButton(
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: token));
-                Navigator.pop(context);
-              },
-              child: Text(lang.getTranslation('copy')),
-            ),
-          ],
-        ),
-      );
-    } else {
-      Flushbar(
-        title: lang.getTranslation("error-bar"),
-        message: result.statusCode == 401
-            ? lang.getTranslation("invalid-credentials")
-            : lang.getTranslation("unknown-error"),
-        backgroundColor: Theme.of(context).errorColor,
-        duration: const Duration(seconds: 3),
-        // retry
-        mainButton: TextButton(
-          // pass itself to the onPressed function
-          onPressed: () {
-            tryLogin();
-            // close the bar
+    try {
+      var result = await http.post(Uri.parse("$urlValue/api/Auth"),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
           },
-          child: Text(
-            lang.getTranslation("retry"),
-            style: TextStyle(color: Theme.of(context).primaryColor),
+          body: jsonEncode({
+            'id': "",
+            'email': usernameValue,
+            'password': passwordValue,
+          }));
+      setSigningIn(false);
+      if (!mounted) return;
+      if (result.statusCode == 200) {
+        var token = jsonDecode(result.body)['token'];
+        // show a dialog where the user can copy the token
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(lang.getTranslation('token')),
+            content: Text(token),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(lang.getTranslation('close')),
+              ),
+              TextButton(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: token));
+                  Navigator.pop(context);
+                },
+                child: Text(lang.getTranslation('copy')),
+              ),
+            ],
           ),
-        ),
-      ).show(context);
+        );
+      } else {
+        Flushbar(
+          title: lang.getTranslation("error-bar"),
+          message: result.statusCode == 401
+              ? lang.getTranslation("invalid-credentials")
+              : lang.getTranslation("unknown-error"),
+          backgroundColor: Theme.of(context).errorColor,
+          duration: const Duration(seconds: 3),
+          // retry
+          mainButton: TextButton(
+            // pass itself to the onPressed function
+            onPressed: () {
+              tryLogin();
+              // close the bar
+            },
+            child: Text(
+              lang.getTranslation("retry"),
+              style: TextStyle(color: Theme.of(context).primaryColor),
+            ),
+          ),
+        ).show(context);
+      }
+    } catch (e) {
+      // check if is handshake exception
+      setSigningIn(false);
+      if (!mounted) return;
+      if (e is HandshakeException) {
+        Flushbar(
+          title: lang.getTranslation("error-bar"),
+          message: lang.getTranslation("invalid-certificate", args: {
+            "host": urlValue,
+          }),
+          backgroundColor: Theme.of(context).errorColor,
+          duration: const Duration(seconds: 3),
+          // retry
+          mainButton: TextButton(
+            // pass itself to the onPressed function
+            onPressed: () {
+              tryLogin();
+              // close the bar
+            },
+            child: Text(
+              lang.getTranslation("retry"),
+              style: TextStyle(color: Theme.of(context).primaryColor),
+            ),
+          ),
+        ).show(context);
+      } else {
+        Flushbar(
+          title: lang.getTranslation("error-bar"),
+          message: lang.getTranslation("unknown-error"),
+          backgroundColor: Theme.of(context).errorColor,
+          duration: const Duration(seconds: 3),
+          // retry
+          mainButton: TextButton(
+            // pass itself to the onPressed function
+            onPressed: () {
+              tryLogin();
+              // close the bar
+            },
+            child: Text(
+              lang.getTranslation("retry"),
+              style: TextStyle(color: Theme.of(context).primaryColor),
+            ),
+          ),
+        ).show(context);
+      }
     }
   }
 
@@ -473,84 +521,131 @@ class _LoginScreenState extends State<LoginScreen> {
     var urlValue = await url;
     var usernameValue = usernameController.text;
     var passwordValue = passwordController.text;
-    var result = await http.post(Uri.parse("$urlValue/api/Auth/Register"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode({
-          'id': "",
-          'email': usernameValue,
-          'password': passwordValue,
-        }));
-    setRegistering(false);
-    if (!mounted) return;
-    if (result.statusCode == 200) {
-      var token = jsonDecode(result.body)['token'];
-      // show a dialog where the user can copy the token
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(lang.getTranslation('token')),
-          content: Text(token),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text(lang.getTranslation('close')),
-            ),
-            TextButton(
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: token));
-                Navigator.pop(context);
-              },
-              child: Text(lang.getTranslation('copy')),
-            ),
-          ],
-        ),
-      );
-    } else if (result.statusCode == 401) {
-      // unauthorized - already registered
-      Flushbar(
-        title: lang.getTranslation("error-bar"),
-        message: lang.getTranslation("email-already-registered",
-            args: {"email": usernameValue}),
-        backgroundColor: Theme.of(context).errorColor,
-        duration: const Duration(seconds: 3),
-        // retry
-        mainButton: TextButton(
-          // pass itself to the onPressed function
-          onPressed: () {
-            tryRegister();
-            // close the bar
+    try {
+      var result = await http.post(Uri.parse("$urlValue/api/Auth/Register"),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
           },
-          child: Text(
-            lang.getTranslation("retry"),
-            style: TextStyle(color: Theme.of(context).primaryColor),
+          body: jsonEncode({
+            'id': "",
+            'email': usernameValue,
+            'password': passwordValue,
+          }));
+      setRegistering(false);
+      if (!mounted) return;
+      if (result.statusCode == 200) {
+        var token = jsonDecode(result.body)['token'];
+        // show a dialog where the user can copy the token
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(lang.getTranslation('token')),
+            content: Text(token),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(lang.getTranslation('close')),
+              ),
+              TextButton(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: token));
+                  Navigator.pop(context);
+                },
+                child: Text(lang.getTranslation('copy')),
+              ),
+            ],
           ),
-        ),
-      ).show(context);
-    } else {
-      Flushbar(
-        title: lang.getTranslation("error-bar"),
-        message: result.statusCode == 401
-            ? lang.getTranslation("invalid-credentials")
-            : lang.getTranslation("unknown-error"),
-        backgroundColor: Theme.of(context).errorColor,
-        duration: const Duration(seconds: 3),
-        // retry
-        mainButton: TextButton(
-          // pass itself to the onPressed function
-          onPressed: () {
-            tryRegister();
-            // close the bar
-          },
-          child: Text(
-            lang.getTranslation("retry"),
-            style: TextStyle(color: Theme.of(context).primaryColor),
+        );
+      } else if (result.statusCode == 401) {
+        // unauthorized - already registered
+        Flushbar(
+          title: lang.getTranslation("error-bar"),
+          message: lang.getTranslation("email-already-registered",
+              args: {"email": usernameValue}),
+          backgroundColor: Theme.of(context).errorColor,
+          duration: const Duration(seconds: 3),
+          // retry
+          mainButton: TextButton(
+            // pass itself to the onPressed function
+            onPressed: () {
+              tryRegister();
+              // close the bar
+            },
+            child: Text(
+              lang.getTranslation("retry"),
+              style: TextStyle(color: Theme.of(context).primaryColor),
+            ),
           ),
-        ),
-      ).show(context);
+        ).show(context);
+      } else {
+        Flushbar(
+          title: lang.getTranslation("error-bar"),
+          message: result.statusCode == 401
+              ? lang.getTranslation("invalid-credentials")
+              : lang.getTranslation("unknown-error"),
+          backgroundColor: Theme.of(context).errorColor,
+          duration: const Duration(seconds: 3),
+          // retry
+          mainButton: TextButton(
+            // pass itself to the onPressed function
+            onPressed: () {
+              tryRegister();
+              // close the bar
+            },
+            child: Text(
+              lang.getTranslation("retry"),
+              style: TextStyle(color: Theme.of(context).primaryColor),
+            ),
+          ),
+        ).show(context);
+      }
+    } catch (e) {
+      // check if is handshake exception
+      setRegistering(false);
+      if (!mounted) return;
+      if (e is HandshakeException) {
+        Flushbar(
+          title: lang.getTranslation("error-bar"),
+          message: lang.getTranslation("invalid-certificate", args: {
+            "host": urlValue,
+          }),
+          backgroundColor: Theme.of(context).errorColor,
+          duration: const Duration(seconds: 3),
+          // retry
+          mainButton: TextButton(
+            // pass itself to the onPressed function
+            onPressed: () {
+              tryRegister();
+              // close the bar
+            },
+            child: Text(
+              lang.getTranslation("retry"),
+              style: TextStyle(color: Theme.of(context).primaryColor),
+            ),
+          ),
+        ).show(context);
+      } else {
+        Flushbar(
+          title: lang.getTranslation("error-bar"),
+          message: lang.getTranslation("unknown-error"),
+          backgroundColor: Theme.of(context).errorColor,
+          duration: const Duration(seconds: 3),
+          // retry
+          mainButton: TextButton(
+            // pass itself to the onPressed function
+            onPressed: () {
+              tryRegister();
+              // close the bar
+            },
+            child: Text(
+              lang.getTranslation("retry"),
+              style: TextStyle(color: Theme.of(context).primaryColor),
+            ),
+          ),
+        ).show(context);
+      }
     }
   }
 
