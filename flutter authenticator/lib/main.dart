@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:oneauth/pages/login.dart';
 import 'package:oneauth/util/lang_controller.dart';
 import 'package:oneauth/util/theme_controller.dart';
@@ -9,20 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:oneauth/constants/themes/light_theme.dart' as light;
 import 'package:oneauth/constants/themes/dark_theme.dart' as dark;
 
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-  }
-}
-
 Future<void> main() async {
-  // if running on debug mode, allow self signed certificates
-  if (kDebugMode) {
-    HttpOverrides.global = MyHttpOverrides();
-  }
   // ensure that we have the scheduler binding initialized
   WidgetsFlutterBinding.ensureInitialized();
   // load the shared preferences from disk before the app is started

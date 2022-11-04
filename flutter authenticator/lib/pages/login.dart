@@ -6,6 +6,7 @@ import 'package:day_night_switcher/day_night_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
+import 'package:oneauth/util/http/http_overrides.dart';
 import 'package:oneauth/util/lang/language.dart';
 import 'package:oneauth/util/lang_controller.dart';
 import 'package:oneauth/util/theme_controller.dart';
@@ -36,6 +37,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _obscureText = true;
   bool _rememberMe = false;
+  bool _validateCertificate = true;
   final urlController = TextEditingController();
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
@@ -46,8 +48,10 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _loadAuthUrl().then((value) {
-      // TODO: auto login
+    _loadValidateCertificate().then((_) {
+      _loadAuthUrl().then((value) {
+        // TODO: auto login
+      });
     });
   }
 
@@ -106,6 +110,19 @@ class _LoginScreenState extends State<LoginScreen> {
     return text;
   }
 
+  bool get validateCertificate {
+    return _validateCertificate;
+  }
+
+  Future<void> setValidateCertificate(bool value) async {
+    var prefs = await SharedPreferences.getInstance();
+    prefs.setBool('validateCertificate', value);
+    HttpOverrides.global = value ? null : MyHttpOverrides();
+    setState(() {
+      _validateCertificate = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final lang = LanguageController.of(context);
@@ -124,42 +141,61 @@ class _LoginScreenState extends State<LoginScreen> {
                 curve: Curves.fastOutSlowIn,
                 duration: const Duration(milliseconds: 400),
                 builder: (context) {
-                  return AlertDialog(
-                    title: Text(lc.getTranslation("settings-title")),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TextField(
-                          controller: urlController,
-                          decoration: InputDecoration(
-                            labelText: lc.getTranslation("settings-auth-url"),
-                          ),
+                  return StatefulBuilder(
+                    builder: (context, setState) {
+                      return AlertDialog(
+                        title: Text(lc.getTranslation("settings-title")),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextField(
+                              controller: urlController,
+                              decoration: InputDecoration(
+                                labelText:
+                                    lc.getTranslation("settings-auth-url"),
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                Text(lc.getTranslation(
+                                    "settings-validate-certificate")),
+                                const Spacer(),
+                                Switch(
+                                  value: validateCertificate,
+                                  onChanged: (value) {
+                                    setValidateCertificate(value)
+                                        .then((value) => setState(() {}));
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(lc.getTranslation("cancel")),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          var url = urlController.text;
-                          if (setUrl(url)) {
-                            Navigator.of(context).pop();
-                          } else {
-                            Flushbar(
-                              backgroundColor: Theme.of(context).errorColor,
-                              message: lc.getTranslation("invalid-url"),
-                              duration: const Duration(seconds: 3),
-                            ).show(context);
-                          }
-                        },
-                        child: Text(lc.getTranslation("save")),
-                      ),
-                    ],
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(lc.getTranslation("cancel")),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              var url = urlController.text;
+                              if (setUrl(url)) {
+                                Navigator.of(context).pop();
+                              } else {
+                                Flushbar(
+                                  backgroundColor: Theme.of(context).errorColor,
+                                  message: lc.getTranslation("invalid-url"),
+                                  duration: const Duration(seconds: 3),
+                                ).show(context);
+                              }
+                            },
+                            child: Text(lc.getTranslation("save")),
+                          ),
+                        ],
+                      );
+                    },
                   );
                 });
           },
@@ -646,6 +682,14 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ).show(context);
       }
+    }
+  }
+
+  Future<void> _loadValidateCertificate() async {
+    var prefs = await SharedPreferences.getInstance();
+    var validateCertificate = prefs.getBool("validateCertificate");
+    if (validateCertificate != null) {
+      setValidateCertificate(validateCertificate);
     }
   }
 

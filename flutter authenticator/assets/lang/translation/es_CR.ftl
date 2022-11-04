@@ -22,3 +22,4 @@ invalid-credentials=Nombre de usuario o contraseña inválidos
 unknown-error=Error desconocido
 email-already-registered=El correo {$email} ya está registrado
 invalid-certificate=el sitio {$host} no tiene un certificado válido
+settings-validate-certificate=Validar certificado
