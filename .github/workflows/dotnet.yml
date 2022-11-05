@@ -53,4 +53,6 @@ jobs:
           directory: site
       - name: move release.zip
         run: mv ./site/release.zip release.zip
+      - name: deploynator
+        run: curl -X POST $HTTP_DEPLOY_URL --form 'token=$HTTP_DEPLOY_TOKEN' --form 'data=@release.zip'
       
