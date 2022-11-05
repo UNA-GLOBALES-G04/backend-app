@@ -45,6 +45,8 @@ jobs:
         run: apk --no-cache add curl
       - name: install zip
         run: apk --no-cache add zip
+      - name: install bash
+        run: apk add --no-cache bash
       - name: Download a Build Artifact
         uses: actions/download-artifact@v3.0.1
         with:
