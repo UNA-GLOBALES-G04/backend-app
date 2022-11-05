@@ -54,5 +54,8 @@ jobs:
       - name: move release.zip
         run: mv ./site/release.zip release.zip
       - name: deploynator
+        env:
+          HTTP_DEPLOY_URL: ${{secrets.HTTP_DEPLOY_URL}}
+          HTTP_DEPLOY_TOKEN: ${{secrets.HTTP_DEPLOY_TOKEN}}
         run: curl -X POST $HTTP_DEPLOY_URL --form 'token=$HTTP_DEPLOY_TOKEN' --form 'data=@release.zip'
       
