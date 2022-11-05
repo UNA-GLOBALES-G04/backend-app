@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
@@ -37,11 +37,14 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    env:
-      deployment_group: conecta2
-      deployment_target: backend
+    container: 
+      image: alpine:latest
     steps:
       - uses: actions/checkout@v3
+      - name: install cURL
+        run: RUN apk --no-cache add curl
+      - name: install zip
+        run: RUN apk --no-cache add zip
       - name: Download a Build Artifact
         uses: actions/download-artifact@v3.0.1
         with:
