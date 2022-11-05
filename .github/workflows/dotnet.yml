@@ -42,9 +42,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: install cURL
-        run: RUN apk --no-cache add curl
+        run: apk --no-cache add curl
       - name: install zip
-        run: RUN apk --no-cache add zip
+        run: apk --no-cache add zip
       - name: Download a Build Artifact
         uses: actions/download-artifact@v3.0.1
         with:
