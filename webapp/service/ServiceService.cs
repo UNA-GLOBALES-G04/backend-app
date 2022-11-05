@@ -43,6 +43,13 @@ namespace webapp.service
             return context.Services.ToList();
         }
 
+        public IEnumerable<Service> getServicesByFilter(string name, string[]tags){
+            name = name ?? "";
+            // check if the name is like the name of the service
+            // and if it contains one of the tags
+            return context.Services.Where(s => s.serviceName.Contains(name) && s.tags.Any(t => tags.Contains(t))).ToList();
+        }
+
         public Service? createService(Service service)
         {
             // the service will have a random GUID
