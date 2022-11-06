@@ -105,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
     var text = urlController.text;
     if (text.isEmpty) {
       var prefs = await SharedPreferences.getInstance();
-      text = prefs.getString('url') ?? 'https://localhost';
+      text = prefs.getString('url') ?? 'https://conecta2.rnvn.net';
     }
     return text;
   }
