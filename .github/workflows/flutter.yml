@@ -1,0 +1,57 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Auth Tool(Windows)
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v1
+      with:
+        channel: 'stable'
+    - name: Build Auth Tool
+      run: |
+        cd "flutter authenticator"
+        flutter config --enable-windows-desktop
+        flutter build windows --release
+        cd ..
+        cp -r "flutter authenticator/build/windows/runner/Release" "release"
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v3
+      with:
+        name: release
+        path: release/
+  release:
+    needs: build
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download a Build Artifact
+        uses: actions/download-artifact@v3.0.1
+        with:
+          name: release
+          path: release/
+    - name: Zip Release
+      run: |
+        cd release
+        zip -r release.zip *
+    - name: App Center Upload
+      uses: wzieba/AppCenter-Github-Action@v1.3.3
+      with:
+        appName: UNA-GLOBALES-G04/auth-tool
+        # Upload token - you can get one from appcenter.ms/settings
+        token: 
+        group: Public
+        file: release/release.zip
+        buildVersion: ${{ env.GITHUB_RUN_NUMBER }}
+        buildNumber: ${{ env.GITHUB_RUN_NUMBER }}
+        gitReleaseNotes: true
+        notifyTesters: false
+        # If true, shows additional information from the action execution
+        #debug: # optional
