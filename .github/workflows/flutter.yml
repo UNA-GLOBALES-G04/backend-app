@@ -29,7 +29,7 @@ jobs:
         path: release/
   release:
     needs: build
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Download a Build Artifact
@@ -40,7 +40,7 @@ jobs:
       - name: Zip Release
         run: |
           cd release
-          Compress-Archive -Path ./* -DestinationPath "release.zip"
+          zip -r release.zip ./*
       - name: App Center Upload
         uses: wzieba/AppCenter-Github-Action@v1.3.3
         with:
