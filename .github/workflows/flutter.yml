@@ -53,5 +53,4 @@ jobs:
         buildNumber: ${{ env.GITHUB_RUN_NUMBER }}
         gitReleaseNotes: true
         notifyTesters: false
-        # If true, shows additional information from the action execution
-        #debug: # optional
+        debug: true 
