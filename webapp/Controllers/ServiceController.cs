@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using webapp.model;
+using webapp.model.filter;
 using webapp.service;
 
 namespace webapp.Controllers
@@ -42,9 +43,10 @@ namespace webapp.Controllers
             return Ok(services);
         }
 
-        [HttpGet, Route("search"), Authorize]
-        public IActionResult GetServicesByFilter(string name, string[] tags)
+        [HttpPost, Route("search"), Authorize]
+        public IActionResult GetServicesByFilter(ServiceFilterDTO filter)
         {
+            
             var subClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             string userID = (subClaim != null) ? subClaim.Value : "";
             if (userID == "")
@@ -58,7 +60,7 @@ namespace webapp.Controllers
                 );
             }
 
-            var services = serviceService.getServicesByFilter(name, tags);
+            var services = serviceService.getServicesByFilter(filter.name, filter.tags);
             return Ok(services);
         }
 
