@@ -40,7 +40,7 @@ jobs:
       - name: Zip Release
         run: |
           cd release
-          zip -r release.zip *
+          Compress-Archive -Path ./* -DestinationPath "release.zip"
       - name: App Center Upload
         uses: wzieba/AppCenter-Github-Action@v1.3.3
         with:
