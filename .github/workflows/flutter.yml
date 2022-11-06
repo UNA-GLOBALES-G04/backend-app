@@ -48,8 +48,8 @@ jobs:
           token: ${{ secrets.APP_CENTER_WIN_DEPLOY_TOKEN_ONEAUTH }}
           group: Public
           file: release/release.zip
-          buildVersion: ${{ env.GITHUB_RUN_NUMBER }}
-          buildNumber: ${{ env.GITHUB_RUN_NUMBER }}
+          buildVersion: ${{github.run_number}}
+          buildNumber: ${{github.run_number}}
           gitReleaseNotes: true
           notifyTesters: false
           debug: true 
