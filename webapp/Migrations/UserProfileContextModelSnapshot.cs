@@ -22,6 +22,28 @@ namespace webapp.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("webapp.model.auth.UserCredential", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("UserCredentials");
+                });
+
             modelBuilder.Entity("webapp.model.Order", b =>
                 {
                     b.Property<Guid>("Id")
@@ -168,6 +190,15 @@ namespace webapp.Migrations
                     b.HasOne("webapp.model.UserProfile", null)
                         .WithMany()
                         .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("webapp.model.UserProfile", b =>
+                {
+                    b.HasOne("webapp.model.auth.UserCredential", null)
+                        .WithOne()
+                        .HasForeignKey("webapp.model.UserProfile", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

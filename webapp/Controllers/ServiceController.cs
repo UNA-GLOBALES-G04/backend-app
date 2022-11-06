@@ -42,6 +42,26 @@ namespace webapp.Controllers
             return Ok(services);
         }
 
+        [HttpGet, Route("search"), Authorize]
+        public IActionResult GetServicesByFilter(string name, string[] tags)
+        {
+            var subClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            string userID = (subClaim != null) ? subClaim.Value : "";
+            if (userID == "")
+            {
+                return Unauthorized(
+                    new
+                    {
+                        error_code = "invalid_token",
+                        error_description = "The token is invalid, please login again"
+                    }
+                );
+            }
+
+            var services = serviceService.getServicesByFilter(name, tags);
+            return Ok(services);
+        }
+
         [HttpGet, Route("id/{serviceID}"), Authorize]
         public IActionResult getService(string serviceID)
         {
@@ -120,7 +140,7 @@ namespace webapp.Controllers
             // check if the service has the same user id
             if (service.UserProfileId == userID)
             {
-                if (userProfileService.existsUserProfile(userID))
+                if (!userProfileService.existsUserProfile(userID))
                 {
                     return NotFound(
                         new
@@ -182,42 +202,6 @@ namespace webapp.Controllers
                 );
             }
             return Unauthorized(new { error_code = "ERR_NON_MATCHING_USER_ID" });
-        }
-
-        [HttpDelete, Route("id/{serviceID}"), Authorize]
-        public IActionResult deleteService(string serviceID)
-        {
-            var subClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            string userID = (subClaim != null) ? subClaim.Value : "";
-            if (userID == "")
-            {
-                return Unauthorized(
-                    new
-                    {
-                        error_code = "invalid_token",
-                        error_description = "The token is invalid, please login again"
-                    }
-                );
-            }
-            // convert and valide the service id to a guid
-            if (Guid.TryParse(serviceID, out Guid serviceGuid))
-            {
-                // delete the service
-                bool result = serviceService.deleteService(serviceGuid);
-                if (result)
-                {
-                    return Ok();
-                }
-                return StatusCode(
-                    StatusCodes.Status500InternalServerError,
-                    new
-                    {
-                        error_code = "service_not_deleted",
-                        error_description = "The service was not deleted, try again"
-                    }
-                );
-            }
-            return BadRequest(new { error_code = "ERR_INVALID_SERVICE_ID" });
         }
     }
 };

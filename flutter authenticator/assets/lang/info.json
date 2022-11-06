@@ -1,0 +1,23 @@
+{
+    "__comment": "this file contains the metadata of the translations",
+    "languages": [
+        {
+            "code": "en_US",
+            "name": "English (United States)"
+        },
+        {
+            "code": "es_CR",
+            "name": "Español (Costa Rica)"
+        }
+    ],
+    "fallbacks": [
+        {
+            "code": "en",
+            "fallback": "en_US"
+        },
+        {
+            "code": "es",
+            "fallback": "es_CR"
+        }
+    ]
+}

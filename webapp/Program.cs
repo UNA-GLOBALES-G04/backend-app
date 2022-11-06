@@ -76,6 +76,7 @@ var connectionString = builder.Configuration.GetConnectionString("DataSource");
 
 builder.Services.AddNpgsql<WebAppContext>(connectionString);
 
+builder.Services.AddScoped<UserCredentialService>();
 builder.Services.AddScoped<UserProfileService>();
 builder.Services.AddScoped<ServiceService>();
 builder.Services.AddScoped<OrderService>();
