@@ -46,7 +46,7 @@ jobs:
       with:
         appName: UNA-GLOBALES-G04/auth-tool
         # Upload token - you can get one from appcenter.ms/settings
-        token: 
+        token: ${{ secrets.APP_CENTER_WIN_DEPLOY_TOKEN_ONEAUTH }}
         group: Public
         file: release/release.zip
         buildVersion: ${{ env.GITHUB_RUN_NUMBER }}
