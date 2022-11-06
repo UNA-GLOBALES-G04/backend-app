@@ -31,26 +31,25 @@ jobs:
     needs: build
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Download a Build Artifact
-        uses: actions/download-artifact@v3.0.1
+      - uses: actions/checkout@v3
+      - name: Download a Build Artifact
+          uses: actions/download-artifact@v3.0.1
+          with:
+            name: release
+            path: release/
+      - name: Zip Release
+        run: |
+          cd release
+          zip -r release.zip *
+      - name: App Center Upload
+        uses: wzieba/AppCenter-Github-Action@v1.3.3
         with:
-          name: release
-          path: release/
-    - name: Zip Release
-      run: |
-        cd release
-        zip -r release.zip *
-    - name: App Center Upload
-      uses: wzieba/AppCenter-Github-Action@v1.3.3
-      with:
-        appName: UNA-GLOBALES-G04/auth-tool
-        # Upload token - you can get one from appcenter.ms/settings
-        token: ${{ secrets.APP_CENTER_WIN_DEPLOY_TOKEN_ONEAUTH }}
-        group: Public
-        file: release/release.zip
-        buildVersion: ${{ env.GITHUB_RUN_NUMBER }}
-        buildNumber: ${{ env.GITHUB_RUN_NUMBER }}
-        gitReleaseNotes: true
-        notifyTesters: false
-        # debug: true 
+          appName: UNA-GLOBALES-G04/auth-tool
+          token: ${{ secrets.APP_CENTER_WIN_DEPLOY_TOKEN_ONEAUTH }}
+          group: Public
+          file: release/release.zip
+          buildVersion: ${{ env.GITHUB_RUN_NUMBER }}
+          buildNumber: ${{ env.GITHUB_RUN_NUMBER }}
+          gitReleaseNotes: true
+          notifyTesters: false
+          debug: true 
