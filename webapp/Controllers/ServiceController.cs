@@ -26,19 +26,6 @@ namespace webapp.Controllers
         [HttpGet, Route("")]
         public IActionResult GetAllServices()
         {
-            var subClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            string userID = (subClaim != null) ? subClaim.Value : "";
-            if (userID == "")
-            {
-                return Unauthorized(
-                    new
-                    {
-                        error_code = "invalid_token",
-                        error_description = "The token is invalid, please login again"
-                    }
-                );
-            }
-
             var services = serviceService.getAllServices();
             return Ok(services);
         }
@@ -46,39 +33,13 @@ namespace webapp.Controllers
         [HttpPost, Route("search")]
         public IActionResult GetServicesByFilter(ServiceFilterDTO filter)
         {
-            
-            var subClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            string userID = (subClaim != null) ? subClaim.Value : "";
-            if (userID == "")
-            {
-                return Unauthorized(
-                    new
-                    {
-                        error_code = "invalid_token",
-                        error_description = "The token is invalid, please login again"
-                    }
-                );
-            }
-
             var services = serviceService.getServicesByFilter(filter.name, filter.tags);
             return Ok(services);
         }
 
-        [HttpGet, Route("id/{serviceID}"), Authorize]
+        [HttpGet, Route("id/{serviceID}")]
         public IActionResult getService(string serviceID)
         {
-            var subClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            string userID = (subClaim != null) ? subClaim.Value : "";
-            if (userID == "")
-            {
-                return Unauthorized(
-                    new
-                    {
-                        error_code = "invalid_token",
-                        error_description = "The token is invalid, please login again"
-                    }
-                );
-            }
             var service = serviceService.getService(serviceID, true);
             if (service != null)
             {
