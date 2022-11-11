@@ -23,7 +23,7 @@ namespace webapp.Controllers
             this.userProfileService = userProfileService;
         }
 
-        [HttpGet, Route(""), Authorize]
+        [HttpGet, Route("")]
         public IActionResult GetAllServices()
         {
             var subClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -43,7 +43,7 @@ namespace webapp.Controllers
             return Ok(services);
         }
 
-        [HttpPost, Route("search"), Authorize]
+        [HttpPost, Route("search")]
         public IActionResult GetServicesByFilter(ServiceFilterDTO filter)
         {
             
