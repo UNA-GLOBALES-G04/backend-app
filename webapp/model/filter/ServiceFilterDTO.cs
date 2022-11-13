@@ -6,5 +6,6 @@ namespace webapp.model.filter
         public string? name { get; set; } = "";
         public string[]? tags { get; set; } = { };
         public bool? union { get; set; } = false;
+        public bool? matchFuzzy { get; set; } = true;
     }
 }

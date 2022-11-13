@@ -50,13 +50,13 @@ namespace webapp.service
             return context.Services.ToList();
         }
 
-        public IEnumerable<Service> getServicesByFilter(string? name, string[]? tags, bool union)
+        public IEnumerable<Service> getServicesByFilter(string? name, string[]? tags, bool union, bool matchFuzzy)
         {
             name = name ?? "";
             // check if the name is like the name of the service
             // and if it contains one of the tags
             // if only name is not null or empty, return all services that contain the name
-            var matcher = new FuzzyMatcher(name);
+            var matcher = new FuzzyMatcher(name, matchFuzzy);
             if (name != "" && (tags == null || tags.Length == 0))
             {
                 return context.Services
