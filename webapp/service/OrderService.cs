@@ -30,9 +30,9 @@ namespace webapp.service
         {
             return context.Orders
                 .Where(o => o.UserProfileId == userProfileID &&
-                        o.status != Order.OrderStatus.CANCELLED &&
-                        o.status != Order.OrderStatus.COMPLETED &&
-                        o.status != Order.OrderStatus.REJECTED).ToList();
+                        o.current_status != Order.OrderStatus.CANCELLED &&
+                        o.current_status != Order.OrderStatus.COMPLETED &&
+                        o.current_status != Order.OrderStatus.REJECTED).ToList();
         }
 
         public IEnumerable<Order> getOrdersByServiceID(Guid serviceID, Order.OrderStatus[] statuses)
@@ -41,7 +41,7 @@ namespace webapp.service
             {
                 return context.Orders.Where(o => o.ServiceId == serviceID).ToList();
             }
-            return context.Orders.Where(o => o.ServiceId == serviceID && statuses.Contains(o.status)).ToList();
+            return context.Orders.Where(o => o.ServiceId == serviceID && statuses.Contains(o.current_status)).ToList();
         }
 
         public bool existsOrder(Guid orderID)
@@ -64,7 +64,7 @@ namespace webapp.service
                 return null;
             }
             // the status will be pending
-            order.status = Order.OrderStatus.PENDING;
+            order.current_status = Order.OrderStatus.PENDING;
 
             context.Orders.Add(order);
             if (context.SaveChanges() > 0)
@@ -84,9 +84,9 @@ namespace webapp.service
                 order.UserProfileId = orderToUpdate.UserProfileId;
                 if (isUser)
                 {
-                    if (orderToUpdate.status == Order.OrderStatus.PENDING)
+                    if (orderToUpdate.current_status == Order.OrderStatus.PENDING)
                     {
-                        if (order.status == Order.OrderStatus.PENDING || order.status == Order.OrderStatus.REJECTED)
+                        if (order.current_status == Order.OrderStatus.PENDING || order.current_status == Order.OrderStatus.REJECTED)
                         {
                             if (orderToUpdate != null)
                             {
@@ -106,12 +106,12 @@ namespace webapp.service
                     }
                     // check if the order is completed
                     // so the user can update the rating
-                    if (orderToUpdate.status == Order.OrderStatus.COMPLETED)
+                    if (orderToUpdate.current_status == Order.OrderStatus.COMPLETED)
                     {
                         // the user can only update the rating
                         order.requiredDate = orderToUpdate.requiredDate;
                         order.direction = orderToUpdate.direction;
-                        order.status = orderToUpdate.status;
+                        order.current_status = orderToUpdate.current_status;
 
                         context.Entry(orderToUpdate).CurrentValues.SetValues(order);
                         if (context.SaveChanges() > 0)
@@ -127,20 +127,29 @@ namespace webapp.service
                     order.rating = orderToUpdate.rating;
 
                     // can only be updated if the status is pending or accepted
-                    if (orderToUpdate.status == Order.OrderStatus.PENDING || orderToUpdate.status == Order.OrderStatus.ACCEPTED)
+                    if (orderToUpdate.current_status == Order.OrderStatus.PENDING || orderToUpdate.current_status == Order.OrderStatus.ACCEPTED)
                     {
                         bool isDowngrade =
                             //
-                            (order.status == Order.OrderStatus.ACCEPTED ||
-                            order.status == Order.OrderStatus.REJECTED) &&
-                            orderToUpdate.status == Order.OrderStatus.PENDING;
+                            (order.current_status == Order.OrderStatus.ACCEPTED ||
+                            order.current_status == Order.OrderStatus.REJECTED) &&
+                            orderToUpdate.current_status == Order.OrderStatus.PENDING;
                         // cannot be a downgrade
                         if (!isDowngrade)
                         {
-                            context.Entry(orderToUpdate).CurrentValues.SetValues(order);
-                            if (context.SaveChanges() > 0)
+                            // check if the order is the same
+                            if (orderToUpdate.current_status != order.current_status)
                             {
-                                return order;
+                                // update orderToUpdate
+                                context.Entry(orderToUpdate).CurrentValues.SetValues(order);
+                                if (context.SaveChanges() > 0)
+                                {
+                                    return orderToUpdate;
+                                }
+                            }
+                            else
+                            {
+                                return orderToUpdate;
                             }
                         }
                     }
@@ -159,9 +168,9 @@ namespace webapp.service
                 if (isUser)
                 {
                     // can only be cancelled if the status is pending
-                    if (orderToDelete.status == Order.OrderStatus.PENDING)
+                    if (orderToDelete.current_status == Order.OrderStatus.PENDING)
                     {
-                        orderToDelete.status = Order.OrderStatus.CANCELLED;
+                        orderToDelete.current_status = Order.OrderStatus.CANCELLED;
                         context.Entry(orderToDelete).CurrentValues.SetValues(orderToDelete);
                         if (context.SaveChanges() > 0)
                         {
@@ -172,9 +181,9 @@ namespace webapp.service
                 else
                 {
                     // can only be rejected if the status is pending or accepted
-                    if (orderToDelete.status == Order.OrderStatus.PENDING || orderToDelete.status == Order.OrderStatus.ACCEPTED)
+                    if (orderToDelete.current_status == Order.OrderStatus.PENDING || orderToDelete.current_status == Order.OrderStatus.ACCEPTED)
                     {
-                        orderToDelete.status = Order.OrderStatus.REJECTED;
+                        orderToDelete.current_status = Order.OrderStatus.REJECTED;
                         context.Entry(orderToDelete).CurrentValues.SetValues(orderToDelete);
                         if (context.SaveChanges() > 0)
                         {

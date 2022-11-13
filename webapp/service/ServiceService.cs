@@ -66,7 +66,7 @@ namespace webapp.service
                     int? rating = ((int?)context.Orders
                         .Where(o =>
                             o.ServiceId == serviceGuid &&
-                            o.status == Order.OrderStatus.COMPLETED)
+                            o.current_status == Order.OrderStatus.COMPLETED)
                         .Select(o => o.rating).Average());
                     return rating;
                 }

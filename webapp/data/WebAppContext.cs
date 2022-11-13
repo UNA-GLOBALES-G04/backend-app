@@ -8,6 +8,7 @@ namespace webapp.data
     {
         public WebAppContext(DbContextOptions<WebAppContext> options) : base(options)
         {
+            Npgsql.NpgsqlConnection.GlobalTypeMapper.MapEnum<Order.OrderStatus>();
         }
 
         // set foreign keys

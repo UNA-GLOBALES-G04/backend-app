@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using webapp.data;
+using webapp.model;
 
 #nullable disable
 
@@ -59,6 +60,9 @@ namespace webapp.Migrations
                         .HasMaxLength(36)
                         .HasColumnType("character varying(36)");
 
+                    b.Property<Order.OrderStatus>("current_status")
+                        .HasColumnType("order_status");
+
                     b.Property<string>("direction")
                         .IsRequired()
                         .HasColumnType("text");
@@ -68,9 +72,6 @@ namespace webapp.Migrations
 
                     b.Property<DateTime>("requiredDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("status")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

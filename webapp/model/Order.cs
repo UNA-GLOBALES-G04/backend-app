@@ -30,7 +30,7 @@ namespace webapp.model
 
         public string direction { get; set; }
 
-        public OrderStatus status { get; set; }
+        public OrderStatus current_status { get; set; }
 
         public int? rating { get; set; }
 
@@ -40,14 +40,16 @@ namespace webapp.model
             string UserProfileId,
             DateTime requiredDate,
             string direction,
-            OrderStatus status)
+            OrderStatus current_status,
+            int? rating)
         {
             this.Id = Id;
             this.ServiceId = ServiceId;
             this.UserProfileId = UserProfileId;
             this.requiredDate = requiredDate;
             this.direction = direction;
-            this.status = status;
+            this.current_status = current_status;
+            this.rating = rating;
         }
     }
 }

@@ -200,6 +200,7 @@ namespace webapp.Controllers
                     );
                 }
                 // add the new order
+                order.rating = null;
                 Order? result = orderService.createOrder(order);
                 if (result != null)
                 {
@@ -306,7 +307,7 @@ namespace webapp.Controllers
                     }
                 );
             }
-            order.status = Order.OrderStatus.ACCEPTED;
+            order.current_status = Order.OrderStatus.ACCEPTED;
             // update the order
             Order? result = orderService.updateOrder(order, false);
             if (result != null)
@@ -376,9 +377,18 @@ namespace webapp.Controllers
                     }
                 );
             }
-            order.status = Order.OrderStatus.COMPLETED;
+            // copy the order
+            var newOrder = new Order(
+                order.Id,
+                order.ServiceId,
+                order.UserProfileId,
+                order.requiredDate,
+                order.direction,
+                Order.OrderStatus.COMPLETED,
+                order.rating
+            );
             // update the order
-            Order? result = orderService.updateOrder(order, false);
+            Order? result = orderService.updateOrder(newOrder, false);
             if (result != null)
             {
                 return Ok(result);
