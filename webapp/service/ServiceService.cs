@@ -56,9 +56,20 @@ namespace webapp.service
             // check if the name is like the name of the service
             // and if it contains one of the tags
             // if only name is not null or empty, return all services that contain the name
+            // set all the tags to lowercase
+            if (tags != null)
+            {
+                for (int i = 0; i < tags.Length; i++)
+                {
+                    tags[i] = tags[i].ToLower();
+                }
+            }
             if (name != "" && (tags == null || tags.Length == 0))
             {
-                return context.Services.Where(s => s.serviceName.ToLower().Contains(name)).ToList();
+                return context.Services.Where(
+                    s => s.serviceName.ToLower().Contains(name) ||
+                    EF.Functions.Like(s.serviceName, "%" + name + "%")
+                    ).ToList();
             }
             else if (name == "" && tags != null && tags.Length != 0)
             {
@@ -69,7 +80,10 @@ namespace webapp.service
             {
                 // match both name and tags (union)
                 return context.Services
-                                .Where(s => s.serviceName.ToLower().Contains(name)).Union(context.Services
+                                .Where(s =>
+                                    s.serviceName.ToLower().Contains(name) ||
+                                    EF.Functions.Like(s.serviceName, "%" + name + "%")
+                                    ).Union(context.Services
                                 .Where(s => tags != null &&
                                         s.tags.Any(t => tags.Contains(t))))
                                     .ToList();
@@ -78,7 +92,9 @@ namespace webapp.service
             {
                 // match both name and tags (intersection)
                 return context.Services
-                                .Where(s => s.serviceName.ToLower().Contains(name)).Intersect(context.Services
+                                .Where(s => s.serviceName.ToLower().Contains(name) ||
+                                    EF.Functions.Like(s.serviceName, "%" + name + "%")
+                                    ).Intersect(context.Services
                                 .Where(s => tags != null &&
                                         s.tags.Any(t => tags.Contains(t))))
                                     .ToList();
