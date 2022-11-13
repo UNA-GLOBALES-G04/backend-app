@@ -74,7 +74,8 @@ namespace webapp.service
             else if (name == "" && tags != null && tags.Length != 0)
             {
                 return context.Services
-                    .Where(s => s.tags.Any(t => tags.Contains(t.ToLower()))).ToList();
+                    .Where(s => s.tags.Any(t =>
+                     tags.Contains(t))).ToList();
             }
 
             if (union)
@@ -86,7 +87,7 @@ namespace webapp.service
                                     EF.Functions.Like(s.serviceName, "%" + name + "%")
                                     ).Union(context.Services
                                 .Where(s => tags != null &&
-                                        s.tags.Any(t => tags.Contains(t.ToLower()))))
+                                        s.tags.Any(t => tags.Contains(t))))
                                     .ToList();
             }
             else
@@ -97,7 +98,7 @@ namespace webapp.service
                                     EF.Functions.Like(s.serviceName, "%" + name + "%")
                                     ).Intersect(context.Services
                                 .Where(s => tags != null &&
-                                        s.tags.Any(t => tags.Contains(t.ToLower()))))
+                                        s.tags.Any(t => tags.Contains(t))))
                                     .ToList();
             }
 
