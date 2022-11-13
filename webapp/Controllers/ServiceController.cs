@@ -55,6 +55,24 @@ namespace webapp.Controllers
             );
         }
 
+        [HttpGet, Route("id/{serviceID}/rating")]
+        public IActionResult getServiceRating(string serviceID)
+        {
+            var service = serviceService.getService(serviceID, false);
+            if (service != null)
+            {
+                int? rating = serviceService.getServiceRating(serviceID);
+                return Ok(new { rating = rating });
+            }
+            return NotFound(
+                    new
+                    {
+                        error_code = "service_not_found",
+                        error_description = "The service was not found"
+                    }
+            );
+        }
+
         [HttpGet, Route("MyServices"), Authorize]
         public IActionResult getServices()
         {

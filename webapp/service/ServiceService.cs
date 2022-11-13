@@ -17,11 +17,16 @@ namespace webapp.service
 
         public Service? getService(string serviceID, bool filterDeleted)
         {
-            if (filterDeleted)
+            // check if the id is a valid GUID
+            if (Guid.TryParse(serviceID, out Guid serviceGuid))
             {
-                return context.Services.Where(s => s.isDeleted == false).FirstOrDefault();
+                if (filterDeleted)
+                {
+                    return context.Services.Where(s => s.Id == serviceGuid && s.isDeleted == false).FirstOrDefault();
+                }
+                return context.Services.Find(serviceGuid);
             }
-            return context.Services.Find(serviceID);
+            return null;
         }
 
         public IEnumerable<Service> getServicesByUserProfileID(string userProfileID, bool filterDeleted)
@@ -43,11 +48,30 @@ namespace webapp.service
             return context.Services.ToList();
         }
 
-        public IEnumerable<Service> getServicesByFilter(string name, string[]tags){
+        public IEnumerable<Service> getServicesByFilter(string name, string[] tags)
+        {
             name = name ?? "";
             // check if the name is like the name of the service
             // and if it contains one of the tags
             return context.Services.Where(s => s.serviceName.Contains(name) && s.tags.Any(t => tags.Contains(t))).ToList();
+        }
+
+        public int? getServiceRating(string serviceID)
+        {
+            if (Guid.TryParse(serviceID, out Guid serviceGuid))
+            {
+                // check if the service exists
+                if (existsService(serviceGuid))
+                {
+                    int? rating = ((int?)context.Orders
+                        .Where(o =>
+                            o.ServiceId == serviceGuid &&
+                            o.status == Order.OrderStatus.COMPLETED)
+                        .Select(o => o.rating).Average());
+                    return rating;
+                }
+            }
+            return null;
         }
 
         public Service? createService(Service service)
@@ -63,24 +87,34 @@ namespace webapp.service
             return null;
         }
 
-        public Service updateService(Service service, bool isUser)
+        public Service? updateService(Service service, bool isUser)
         {
             // the following fields cannot be updated by the user
             // Id, UserProfileId, UserProfile, isDeleted
-            if (isUser)
+            var originalService = context.Services.Find(service.Id);
+            if (originalService != null)
             {
-                // get the original isDeleted
-                var originalService = context.Services.Find(service.Id);
+                if (isUser)
+                {
+                    // get the original isDeleted
+                    if (originalService != null)
+                    {
+                        service.Id = originalService.Id;
+                        service.UserProfileId = originalService.UserProfileId;
+                        service.isDeleted = originalService.isDeleted;
+                    }
+                }
                 if (originalService != null)
                 {
-                    service.Id = originalService.Id;
-                    service.UserProfileId = originalService.UserProfileId;
-                    service.isDeleted = originalService.isDeleted;
+                    context.Entry(originalService).CurrentValues.SetValues(service);
+                    if (context.SaveChanges() > 0)
+                    {
+                        return service;
+                    }
                 }
+
             }
-            context.Services.Update(service);
-            context.SaveChanges();
-            return service;
+            return null;
         }
 
         public bool deleteService(Guid serviceID)

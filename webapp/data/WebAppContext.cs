@@ -36,6 +36,9 @@ namespace webapp.data
                 .HasOne<UserCredential>()
                 .WithOne()
                 .HasForeignKey<UserProfile>(u => u.Id);
+
+            // map order status to enum
+            modelBuilder.HasPostgresEnum<Order.OrderStatus>();
         }
 
         public DbSet<UserProfile> UserProfiles => Set<UserProfile>();

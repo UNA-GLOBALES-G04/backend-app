@@ -46,13 +46,17 @@ namespace webapp.service
             return null;
         }
 
-        public UserProfile updateUserProfile(UserProfile userProfile, bool isUser)
+        public UserProfile? updateUserProfile(UserProfile userProfile, bool isUser)
         {
             // the user cannot update some fields of the profile
+            var originalUserProfile = context.UserProfiles.Find(userProfile.Id);
+            if (originalUserProfile == null)
+            {
+                return null;
+            }
             if (isUser)
             {
                 // get the original legalDocumentID, birthDate, isDeleted and isVerified
-                var originalUserProfile = context.UserProfiles.Find(userProfile.Id);
                 if (originalUserProfile != null)
                 {
                     userProfile.legalDocumentID = originalUserProfile.legalDocumentID;
@@ -61,9 +65,16 @@ namespace webapp.service
                     userProfile.isVerified = originalUserProfile.isVerified;
                 }
             }
-            context.UserProfiles.Update(userProfile);
-            context.SaveChanges();
-            return userProfile;
+            // update the original user profile
+            if (originalUserProfile != null)
+            {
+                context.Entry(originalUserProfile).CurrentValues.SetValues(userProfile);
+                if (context.SaveChanges() > 0)
+                {
+                    return userProfile;
+                }
+            }
+            return null;
         }
 
         public bool deleteUserProfile(string userID)

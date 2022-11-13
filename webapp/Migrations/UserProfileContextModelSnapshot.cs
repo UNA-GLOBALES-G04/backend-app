@@ -20,6 +20,7 @@ namespace webapp.Migrations
                 .HasAnnotation("ProductVersion", "6.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "order_status", new[] { "pending", "accepted", "rejected", "completed", "cancelled" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("webapp.model.auth.UserCredential", b =>
@@ -61,6 +62,9 @@ namespace webapp.Migrations
                     b.Property<string>("direction")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int?>("rating")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("requiredDate")
                         .HasColumnType("timestamp with time zone");

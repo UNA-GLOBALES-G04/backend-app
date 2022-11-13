@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -66,6 +67,14 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
+// JSON serializer settings
+
+// - order enum by name instead of integer value
+builder.Services.AddMvc().AddJsonOptions(options =>
+{
+    var enumConverter = new JsonStringEnumConverter();
+    options.JsonSerializerOptions.Converters.Add(enumConverter);
+});
 
 // ----------------------------------------
 // Contexts Services

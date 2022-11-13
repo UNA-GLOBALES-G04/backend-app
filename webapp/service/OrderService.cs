@@ -14,12 +14,25 @@ namespace webapp.service
 
         public Order? getOrder(string orderID)
         {
-            return context.Orders.Find(orderID);
+            if (Guid.TryParse(orderID, out Guid orderGuid))
+            {
+                return context.Orders.Find(orderGuid);
+            }
+            return null;
         }
 
         public IEnumerable<Order> getOrdersByUserProfileID(string userProfileID)
         {
             return context.Orders.Where(o => o.UserProfileId == userProfileID).ToList();
+        }
+
+        public IEnumerable<Order> getActiveUserOrders(string userProfileID)
+        {
+            return context.Orders
+                .Where(o => o.UserProfileId == userProfileID &&
+                        o.status != Order.OrderStatus.CANCELLED &&
+                        o.status != Order.OrderStatus.COMPLETED &&
+                        o.status != Order.OrderStatus.REJECTED).ToList();
         }
 
         public IEnumerable<Order> getOrdersByServiceID(Guid serviceID, Order.OrderStatus[] statuses)
@@ -75,12 +88,35 @@ namespace webapp.service
                     {
                         if (order.status == Order.OrderStatus.PENDING || order.status == Order.OrderStatus.REJECTED)
                         {
-                            context.Orders.Update(order);
-                            if (context.SaveChanges() > 0)
+                            if (orderToUpdate != null)
                             {
-                                return order;
+                                // the rating cannot be updated by the user
+                                // unless the order is completed
+                                order.rating = orderToUpdate.rating;
+
+                                // update orderToUpdate
+                                context.Entry(orderToUpdate).CurrentValues.SetValues(order);
+                                if (context.SaveChanges() > 0)
+                                {
+                                    return orderToUpdate;
+                                }
                             }
                             return null;
+                        }
+                    }
+                    // check if the order is completed
+                    // so the user can update the rating
+                    if (orderToUpdate.status == Order.OrderStatus.COMPLETED)
+                    {
+                        // the user can only update the rating
+                        order.requiredDate = orderToUpdate.requiredDate;
+                        order.direction = orderToUpdate.direction;
+                        order.status = orderToUpdate.status;
+
+                        context.Entry(orderToUpdate).CurrentValues.SetValues(order);
+                        if (context.SaveChanges() > 0)
+                        {
+                            return orderToUpdate;
                         }
                     }
                 }
@@ -88,6 +124,7 @@ namespace webapp.service
                 {
                     order.requiredDate = orderToUpdate.requiredDate;
                     order.direction = orderToUpdate.direction;
+                    order.rating = orderToUpdate.rating;
 
                     // can only be updated if the status is pending or accepted
                     if (orderToUpdate.status == Order.OrderStatus.PENDING || orderToUpdate.status == Order.OrderStatus.ACCEPTED)
@@ -100,12 +137,11 @@ namespace webapp.service
                         // cannot be a downgrade
                         if (!isDowngrade)
                         {
-                            context.Orders.Update(order);
+                            context.Entry(orderToUpdate).CurrentValues.SetValues(order);
                             if (context.SaveChanges() > 0)
                             {
                                 return order;
                             }
-                            return null;
                         }
                     }
                 }
@@ -113,5 +149,41 @@ namespace webapp.service
             return null;
         }
 
+
+        public Order? deleteOrder(Guid orderID, bool isUser)
+        {
+            Order? orderToDelete = context.Orders.Find(orderID);
+            if (orderToDelete != null)
+            {
+                // set the status to cancelled if is user else rejected
+                if (isUser)
+                {
+                    // can only be cancelled if the status is pending
+                    if (orderToDelete.status == Order.OrderStatus.PENDING)
+                    {
+                        orderToDelete.status = Order.OrderStatus.CANCELLED;
+                        context.Entry(orderToDelete).CurrentValues.SetValues(orderToDelete);
+                        if (context.SaveChanges() > 0)
+                        {
+                            return orderToDelete;
+                        }
+                    }
+                }
+                else
+                {
+                    // can only be rejected if the status is pending or accepted
+                    if (orderToDelete.status == Order.OrderStatus.PENDING || orderToDelete.status == Order.OrderStatus.ACCEPTED)
+                    {
+                        orderToDelete.status = Order.OrderStatus.REJECTED;
+                        context.Entry(orderToDelete).CurrentValues.SetValues(orderToDelete);
+                        if (context.SaveChanges() > 0)
+                        {
+                            return orderToDelete;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
     }
 }

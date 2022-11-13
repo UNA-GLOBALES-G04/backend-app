@@ -11,7 +11,8 @@ namespace webapp.model
             PENDING,
             ACCEPTED,
             REJECTED,
-            COMPLETED
+            COMPLETED,
+            CANCELLED
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -30,6 +31,8 @@ namespace webapp.model
         public string direction { get; set; }
 
         public OrderStatus status { get; set; }
+
+        public int? rating { get; set; }
 
         public Order(
             Guid Id,
