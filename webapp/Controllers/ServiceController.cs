@@ -46,15 +46,11 @@ namespace webapp.Controllers
             {
                 return GetAllServices();
             }
-            if (filter.union == null)
+            if(filter.union == null)
             {
                 filter.union = false;
             }
-            if (filter.matchFuzzy == null)
-            {
-                filter.matchFuzzy = true;
-            }
-            var services = serviceService.getServicesByFilter(filter.name, filter.tags, (bool)filter.union, (bool)filter.matchFuzzy);
+            var services = serviceService.getServicesByFilter(filter.name, filter.tags, (bool)filter.union);
             return Ok(services);
         }
 
