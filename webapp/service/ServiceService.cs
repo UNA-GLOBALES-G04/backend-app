@@ -79,6 +79,8 @@ namespace webapp.service
             // the service will have a random GUID
             service.Id = Guid.NewGuid();
             // the service is not deleted by default
+            // by default cannot be deleted
+            service.isDeleted = false;
             context.Services.Add(service);
             if (context.SaveChanges() > 0)
             {
