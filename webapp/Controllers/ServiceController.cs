@@ -33,6 +33,19 @@ namespace webapp.Controllers
         [HttpPost, Route("search")]
         public IActionResult GetServicesByFilter(ServiceFilterDTO filter)
         {
+            // if name and category are null, return all services
+            if (filter.name == "")
+            {
+                filter.name = null;
+            }
+            if (filter.category == "")
+            {
+                filter.category = null;
+            }
+            if (filter.name == null && filter.category == null)
+            {
+                return GetAllServices();
+            }
             var services = serviceService.getServicesByFilter(filter.name, filter.tags);
             return Ok(services);
         }
