@@ -38,11 +38,11 @@ namespace webapp.Controllers
             {
                 filter.name = null;
             }
-            if (filter.category == "")
+            if (filter.tags != null && filter.tags.Length == 0)
             {
-                filter.category = null;
+                filter.tags = null;
             }
-            if (filter.name == null && filter.category == null)
+            if (filter.name == null && filter.tags == null)
             {
                 return GetAllServices();
             }
