@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using webapp.data;
 using webapp.model;
 
+using webapp.util;
+
 namespace webapp.service
 {
 
@@ -54,9 +56,11 @@ namespace webapp.service
             // check if the name is like the name of the service
             // and if it contains one of the tags
             // if only name is not null or empty, return all services that contain the name
+            var matcher = new FuzzyMatcher(name);
             if (name != "" && (tags == null || tags.Length == 0))
             {
-                return context.Services.Where(s => s.serviceName.Contains(name)).ToList();
+                return context.Services
+                    .Where(s => matcher.MatchFuzzy(s.serviceName)).ToList();
             }
             else if (name == "" && tags != null && tags.Length != 0)
             {
@@ -67,7 +71,7 @@ namespace webapp.service
             {
                 // match both name and tags (union)
                 return context.Services
-                                .Where(s => s.serviceName.Contains(name)).Union(context.Services
+                                .Where(s => matcher.MatchFuzzy(s.serviceName)).Union(context.Services
                                 .Where(s => tags != null &&
                                         s.tags.Any(t => tags.Contains(t))))
                                     .ToList();
@@ -76,7 +80,7 @@ namespace webapp.service
             {
                 // match both name and tags (intersection)
                 return context.Services
-                                .Where(s => s.serviceName.Contains(name)).Intersect(context.Services
+                                .Where(s => matcher.MatchFuzzy(s.serviceName)).Intersect(context.Services
                                 .Where(s => tags != null &&
                                         s.tags.Any(t => tags.Contains(t))))
                                     .ToList();
