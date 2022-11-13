@@ -26,9 +26,8 @@ namespace webapp.Controllers
             var userCredential = userCredentialService.getUserCredentialFromEmail(user.Email);
             if (userCredential != null)
             {
-                var hash = Argon2.Hash(userCredential.Password);
                 // verify the password
-                if (Argon2.Verify(hash, userCredential.Password))
+                if (Argon2.Verify(userCredential.Password, user.Password))
                 {
                     // generate a JWT token
                     user.Id = userCredential.Id;
