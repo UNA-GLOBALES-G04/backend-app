@@ -48,12 +48,21 @@ namespace webapp.service
             return context.Services.ToList();
         }
 
-        public IEnumerable<Service> getServicesByFilter(string name, string[] tags)
+        public IEnumerable<Service> getServicesByFilter(string? name, string[]? tags)
         {
             name = name ?? "";
             // check if the name is like the name of the service
             // and if it contains one of the tags
-            return context.Services.Where(s => s.serviceName.Contains(name) && s.tags.Any(t => tags.Contains(t))).ToList();
+
+            //IEnumerable<Service> match_name = name != null ? context.Services.Where(s => s.serviceName.Contains(name)).ToList() : Enumerable.Empty<Service>();
+            //IEnumerable<Service> match_tags = tags != null ? context.Services.Where(s => s.tags.Any(t => tags.Contains(t))).ToList() : Enumerable.Empty<Service>();
+            //return match_name.Union(match_tags);
+            return context.Services
+                .Where(s => s.serviceName.Contains(name)).Union(context.Services
+                .Where(s => tags != null &&
+                        s.tags.Any(t => tags.Contains(t))))
+                    .ToList();
+
         }
 
         public int? getServiceRating(string serviceID)
