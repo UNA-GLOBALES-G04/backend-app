@@ -46,7 +46,11 @@ namespace webapp.Controllers
             {
                 return GetAllServices();
             }
-            var services = serviceService.getServicesByFilter(filter.name, filter.tags);
+            if(filter.union == null)
+            {
+                filter.union = false;
+            }
+            var services = serviceService.getServicesByFilter(filter.name, filter.tags, (bool)filter.union);
             return Ok(services);
         }
 
