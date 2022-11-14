@@ -46,7 +46,7 @@ namespace webapp.Controllers
             {
                 return GetAllServices();
             }
-            if(filter.union == null)
+            if (filter.union == null)
             {
                 filter.union = false;
             }
@@ -201,14 +201,19 @@ namespace webapp.Controllers
             }
             return Unauthorized(new { error_code = "ERR_NON_MATCHING_USER_ID" });
         }
-    
+
         [HttpGet, Route("user/{userID}")]
         public IActionResult getServicesByUserID(string userID)
         {
             var services = serviceService.getServicesByUserProfileID(userID, true);
-            if (services != null)
+            var user = userProfileService.getUserProfile(userID);
+            if (services != null && user != null)
             {
-                return Ok(services);
+                return Ok(new
+                {
+                    vendorName = user.fullName,
+                    services = services
+                });
             }
 
             return NotFound(
