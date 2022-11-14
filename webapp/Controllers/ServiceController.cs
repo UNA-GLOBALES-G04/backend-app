@@ -201,5 +201,23 @@ namespace webapp.Controllers
             }
             return Unauthorized(new { error_code = "ERR_NON_MATCHING_USER_ID" });
         }
+    
+        [HttpGet, Route("user/{userID}")]
+        public IActionResult getServicesByUserID(string userID)
+        {
+            var services = serviceService.getServicesByUserProfileID(userID, true);
+            if (services != null)
+            {
+                return Ok(services);
+            }
+
+            return NotFound(
+                    new
+                    {
+                        error_code = "services_not_found",
+                        error_description = "The services were not found"
+                    }
+            );
+        }
     }
 };
