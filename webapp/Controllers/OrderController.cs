@@ -171,6 +171,64 @@ namespace webapp.Controllers
             );
         }
 
+        // get the orders by vendorID and a array of status
+        [HttpGet, Route("vendor/{vendorID}/orders"), Authorize]
+        public IActionResult getVendorOrders(string vendorID, [FromQuery] Order.OrderStatus[] status)
+        {
+            var subClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            string userID = (subClaim != null) ? subClaim.Value : "";
+            if (userID == "")
+            {
+                return Unauthorized(
+                    new
+                    {
+                        error_code = "invalid_token",
+                        error_description = "The token is invalid, please login again"
+                    }
+                );
+            }
+            // get the user profile
+            var userProfile = userProfileService.getUserProfile(vendorID.ToString());
+            if (userProfile == null)
+            {
+                return NotFound(
+                    new
+                    {
+                        error_code = "user_profile_not_found",
+                        error_description = "The user profile was not found"
+                    }
+                );
+            }
+            else
+            {
+                // check if the user is the owner of the service
+                if (userProfile.Id != userID)
+                {
+                    return Unauthorized(
+                        new
+                        {
+                            error_code = "ERR_USER_NOT_OWNER",
+                            error_description = "You are not authorized to access this resource"
+                        }
+                    );
+                }
+            }
+            var orders = orderService.getOrdersByVendorID(vendorID, status);
+            if (orders != null)
+            {
+                return Ok(orders);
+            }
+
+            return NotFound(
+                    new
+                    {
+                        error_code = "orders_by_vendor_not_found",
+                        error_description = "The orders of vendor were not found"
+                    }
+            );
+        }
+
+
         [HttpPost, Authorize]
         public IActionResult addOrder(Order order)
         {

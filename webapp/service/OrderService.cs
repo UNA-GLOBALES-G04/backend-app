@@ -44,6 +44,29 @@ namespace webapp.service
             return context.Orders.Where(o => o.ServiceId == serviceID && statuses.Contains(o.current_status)).ToList();
         }
 
+        public IEnumerable<Order> getOrdersByVendorID(string vendorID, Order.OrderStatus[] statuses)
+        {
+            if (statuses.Length == 0)
+            {
+                // the vendor ID is in the service table
+                return (IEnumerable<Order>)context.Orders
+                    .Join(context.Services,
+                          order => order.ServiceId, s => s.Id, (order, service)
+                            => new { order, service = service })
+                    .Where(os => os.service.UserProfileId == vendorID)
+                        .Select((object os) => os).ToList();
+            }
+            return (IEnumerable<Order>)context.Orders
+                .Join(context.Services,
+                    order => order.ServiceId,
+                    s => s.Id, (order, service)
+                        => new { order, service = service })
+                .Where(os => os.service.UserProfileId == vendorID &&
+                        statuses.Contains(os.order.current_status))
+                        .Select((object os) => os).ToList();
+
+        }
+
         public bool existsOrder(Guid orderID)
         {
             return context.Orders.AsNoTracking().Any(o => o.Id == orderID);
