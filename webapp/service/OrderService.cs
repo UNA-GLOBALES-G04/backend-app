@@ -46,25 +46,23 @@ namespace webapp.service
 
         public IEnumerable<Order> getOrdersByVendorID(string vendorID, Order.OrderStatus[] statuses)
         {
+            IQueryable<Order>? query;
             if (statuses.Length == 0)
             {
                 // the vendor ID is in the service table
-                return (IEnumerable<Order>)context.Orders
-                    .Join(context.Services,
-                          order => order.ServiceId, s => s.Id, (order, service)
-                            => new { order, service = service })
-                    .Where(os => os.service.UserProfileId == vendorID)
-                        .Select((object os) => os).ToList();
+                query = from order in context.Orders
+                        join service in context.Services on order.ServiceId equals service.Id
+                        where service.UserProfileId == vendorID
+                        select order;
             }
-            return (IEnumerable<Order>)context.Orders
-                .Join(context.Services,
-                    order => order.ServiceId,
-                    s => s.Id, (order, service)
-                        => new { order, service = service })
-                .Where(os => os.service.UserProfileId == vendorID &&
-                        statuses.Contains(os.order.current_status))
-                        .Select((object os) => os).ToList();
-
+            else
+            {
+                query = from order in context.Orders
+                        join service in context.Services on order.ServiceId equals service.Id
+                        where service.UserProfileId == vendorID && statuses.Contains(order.current_status)
+                        select order;
+            }
+            return query.ToList();
         }
 
         public bool existsOrder(Guid orderID)
