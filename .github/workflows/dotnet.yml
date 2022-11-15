@@ -25,7 +25,7 @@ jobs:
     - name: bundle EF
       run: |
         dotnet tool restore
-        dotnet ef migrations bundle --configuration Bundle --project webapp
+        dotnet ef migrations bundle --configuration Bundle --project webapp --verbose
         mv efbundle site/efbundle
     - name: Test
       run: dotnet test webapp --no-build --verbosity normal
