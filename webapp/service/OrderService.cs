@@ -112,6 +112,7 @@ namespace webapp.service
                         order.requiredDate = orderToUpdate.requiredDate;
                         order.direction = orderToUpdate.direction;
                         order.current_status = orderToUpdate.current_status;
+                        order.description = orderToUpdate.description;
 
                         context.Entry(orderToUpdate).CurrentValues.SetValues(order);
                         if (context.SaveChanges() > 0)
@@ -125,6 +126,7 @@ namespace webapp.service
                     order.requiredDate = orderToUpdate.requiredDate;
                     order.direction = orderToUpdate.direction;
                     order.rating = orderToUpdate.rating;
+                    order.description = orderToUpdate.description;
 
                     // can only be updated if the status is pending or accepted
                     if (orderToUpdate.current_status == Order.OrderStatus.PENDING || orderToUpdate.current_status == Order.OrderStatus.ACCEPTED)

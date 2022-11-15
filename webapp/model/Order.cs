@@ -33,6 +33,7 @@ namespace webapp.model
         public OrderStatus current_status { get; set; }
 
         public int? rating { get; set; }
+        public string? description { get; set; }
 
         public Order(
             Guid Id,
@@ -41,7 +42,8 @@ namespace webapp.model
             DateTime requiredDate,
             string direction,
             OrderStatus current_status,
-            int? rating)
+            int? rating,
+            string? description)
         {
             this.Id = Id;
             this.ServiceId = ServiceId;
@@ -50,6 +52,7 @@ namespace webapp.model
             this.direction = direction;
             this.current_status = current_status;
             this.rating = rating;
+            this.description = description;
         }
     }
 }

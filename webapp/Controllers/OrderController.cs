@@ -385,7 +385,8 @@ namespace webapp.Controllers
                 order.requiredDate,
                 order.direction,
                 Order.OrderStatus.COMPLETED,
-                order.rating
+                order.rating,
+                order.description
             );
             // update the order
             Order? result = orderService.updateOrder(newOrder, false);

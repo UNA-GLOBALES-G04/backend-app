@@ -63,6 +63,9 @@ namespace webapp.Migrations
                     b.Property<Order.OrderStatus>("current_status")
                         .HasColumnType("order_status");
 
+                    b.Property<string>("description")
+                        .HasColumnType("text");
+
                     b.Property<string>("direction")
                         .IsRequired()
                         .HasColumnType("text");
