@@ -165,8 +165,12 @@ namespace webapp.service
                             {
                                 // update orderToUpdate
                                 context.Entry(orderToUpdate).CurrentValues.SetValues(order);
+                                context.Entry(orderToUpdate).State = EntityState.Modified;
+                                // set the new status
                                 if (context.SaveChanges() > 0)
                                 {
+                                    // print the new status
+                                    Console.WriteLine("New status: " + orderToUpdate.current_status);
                                     return orderToUpdate;
                                 }
                             }
