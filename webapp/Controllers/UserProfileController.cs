@@ -92,7 +92,7 @@ namespace webapp.Controllers
         }
 
         // update user profile
-        [HttpPut, Route("profile/user"), Authorize]
+        [HttpPost, Route("profile/user/update"), Authorize]
         public IActionResult updateUserProfile([FromBody] UserProfile userProfile)
         {
             var subClaim = User.FindFirst(ClaimTypes.NameIdentifier);

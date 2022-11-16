@@ -166,7 +166,7 @@ namespace webapp.Controllers
             return Unauthorized(new { error_code = "ERR_NON_MATCHING_USER_ID" });
         }
 
-        [HttpPut, Authorize]
+        [HttpPost, Route("update"), Authorize]
         public IActionResult updateService(Service service)
         {
             var subClaim = User.FindFirst(ClaimTypes.NameIdentifier);
