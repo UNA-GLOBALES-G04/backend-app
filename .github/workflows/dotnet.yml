@@ -20,6 +20,7 @@ jobs:
       run: dotnet restore webapp
     - name: Build
       run: |
+        dotnet restore webapp
         dotnet build webapp --no-restore -c release
         dotnet publish webapp /p:Configuration=Release /p:PublishProfile=FolderProfile -o site
     - name: bundle EF
