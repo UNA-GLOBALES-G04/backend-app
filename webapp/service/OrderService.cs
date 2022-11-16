@@ -156,7 +156,7 @@ namespace webapp.service
                             //
                             (order.current_status == Order.OrderStatus.ACCEPTED ||
                             order.current_status == Order.OrderStatus.REJECTED) &&
-                            orderToUpdate.current_status == Order.OrderStatus.PENDING;
+                            orderToUpdate.current_status != Order.OrderStatus.PENDING;
                         // cannot be a downgrade
                         if (!isDowngrade)
                         {
@@ -165,15 +165,10 @@ namespace webapp.service
                             {
                                 // update orderToUpdate
                                 context.Entry(orderToUpdate).CurrentValues.SetValues(order);
-                                context.Entry(orderToUpdate).State = EntityState.Modified;
-                                // set the new status
                                 if (context.SaveChanges() > 0)
                                 {
-                                    // print the new status
-                                    Console.WriteLine("New status: " + orderToUpdate.current_status);
                                     return orderToUpdate;
                                 }
-                                Console.WriteLine("Error: " + orderToUpdate.current_status);
                             }
                             else
                             {

@@ -351,9 +351,19 @@ namespace webapp.Controllers
                     }
                 );
             }
-            order.current_status = Order.OrderStatus.ACCEPTED;
+            // copy the order
+            var newOrder = new Order(
+                order.Id,
+                order.ServiceId,
+                order.UserProfileId,
+                order.requiredDate,
+                order.direction,
+                Order.OrderStatus.ACCEPTED,
+                order.rating,
+                order.description
+            );
             // update the order
-            Order? result = orderService.updateOrder(order, false);
+            Order? result = orderService.updateOrder(newOrder, false);
             if (result != null)
             {
                 return Ok(result);
