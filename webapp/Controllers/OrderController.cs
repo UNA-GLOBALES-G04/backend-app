@@ -262,7 +262,7 @@ namespace webapp.Controllers
             return Unauthorized(new { error_code = "ERR_NON_MATCHING_USER_ID" });
         }
 
-        [HttpPut, Authorize]
+        [HttpPost, Route("update") , Authorize]
         public IActionResult updateOrder(Order order)
         {
             var subClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -298,7 +298,7 @@ namespace webapp.Controllers
             return Unauthorized(new { error_code = "ERR_NON_MATCHING_USER_ID" });
         }
 
-        [HttpPut, Route("{serviceID}/{orderID}/accept"), Authorize]
+        [HttpPost, Route("{serviceID}/{orderID}/accept"), Authorize]
         public IActionResult acceptOrder(Guid serviceID, Guid orderID)
         {
             var subClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -368,7 +368,7 @@ namespace webapp.Controllers
             );
         }
 
-        [HttpPut, Route("{serviceID}/{orderID}/complete"), Authorize]
+        [HttpPost, Route("{serviceID}/{orderID}/complete"), Authorize]
         public IActionResult completeOrder(Guid serviceID, Guid orderID)
         {
             var subClaim = User.FindFirst(ClaimTypes.NameIdentifier);
