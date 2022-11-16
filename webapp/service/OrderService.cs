@@ -173,6 +173,7 @@ namespace webapp.service
                                     Console.WriteLine("New status: " + orderToUpdate.current_status);
                                     return orderToUpdate;
                                 }
+                                Console.WriteLine("Error: " + orderToUpdate.current_status);
                             }
                             else
                             {
